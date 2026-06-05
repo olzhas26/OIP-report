@@ -245,6 +245,7 @@ const SHEET_ID  = '1zwNjuojBXjJ3ZwwyyORgGdCPW5afsypIF0gk1A8qphY';
 const BASE_URL  = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=';
 const URL_KPI   = BASE_URL + encodeURIComponent('Отчет KPI');
 const URL_SUM   = BASE_URL + encodeURIComponent('Сводка типов');
+const URL_WORK  = BASE_URL + encodeURIComponent('Проекты в работе');
 
 // ── COLORS ──────────────────────────────────────────────────────────────────
 const TC = {Концепт:'#1e3a6b',Посадка:'#f0a030',Визуализация:'#f5d8a8',Планировки:'#9ab8cc',ЭП:'#c8dff0','Без типа':'#e8e8e8'};
@@ -303,58 +304,49 @@ function parseSummary(rows) {
 
 // ── PARSE KPI SHEET ──────────────────────────────────────────────────────────
 function parseKPI(rows) {
-  const projects = [], work = [];
+  const projects = [];
   let headerIdx = -1;
-  // Find "Отчет KPI" header
   for (let i = 0; i < rows.length; i++) {
     if (rows[i].some(c => c === '№ п/п' || c === 'Наименование')) { headerIdx = i; break; }
   }
-  if (headerIdx < 0) return { projects, work };
-
-  let workHeaderIdx = -1;
-  // Find "Проекты в работе" section (has "Контакт" column)
-  for (let i = headerIdx+1; i < rows.length; i++) {
-    if (rows[i].some(c => c === 'Контакт' || c === 'Поступил')) { workHeaderIdx = i; break; }
+  if (headerIdx < 0) return projects;
+  for (let i = headerIdx + 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (!r[0] || isNaN(parseInt(r[0]))) continue;
+    let type = r[3]||'';
+    if (type.toLowerCase().startsWith('эскиз')) type = 'Эскиз';
+    projects.push({
+      num: parseInt(r[0]), name: r[1]||'', division: r[2]||'',
+      type, video: r[4]==='Да', deadline: r[5]||'',
+      persons: [r[7],r[8],r[9]].filter(Boolean).join(', '),
+      status: r[10]||''
+    });
   }
+  return projects;
+}
 
-  const parseSection = (startIdx, endIdx, hasContact) => {
-    const items = [];
-    for (let i = startIdx; i < (endIdx || rows.length); i++) {
-      const r = rows[i];
-      if (!r[0] || isNaN(parseInt(r[0]))) continue;
-      if (hasContact) {
-        // Контакт is col 3, Поступил col 4, Срок col 5, Задача col 6, Ответственные 7-9, Статус 10
-        items.push({
-          num: parseInt(r[0]), name: r[1]||'', division: r[2]||'',
-          contact: r[3]||'', deadline: r[5]||'', task: r[6]||'',
-          persons: [r[7],r[8],r[9]].filter(Boolean).join(', '),
-          status: r[10]||''
-        });
-      } else {
-        // Тип col3, Видео col4, Срок col5, Задача col6, Ответственные 7-9, Статус 10
-        let type = r[3]||'';
-        if (type.toLowerCase().startsWith('эскиз')) type = 'Эскиз';
-        items.push({
-          num: parseInt(r[0]), name: r[1]||'', division: r[2]||'',
-          type, video: r[4]==='Да', deadline: r[5]||'',
-          persons: [r[7],r[8],r[9]].filter(Boolean).join(', '),
-          status: r[10]||''
-        });
-      }
-    }
-    return items;
-  };
-
-  const kpiEnd = workHeaderIdx > 0 ? workHeaderIdx - 1 : undefined;
-  const parsed = parseSection(headerIdx + 1, kpiEnd, false);
-  projects.push(...parsed);
-
-  if (workHeaderIdx > 0) {
-    const wParsed = parseSection(workHeaderIdx + 1, undefined, true);
-    work.push(...wParsed);
+// ── PARSE WORK SHEET ─────────────────────────────────────────────────────────
+function parseWork(rows) {
+  const work = [];
+  let headerIdx = -1;
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].some(c => c === 'Наименование' || c === '№ п/п')) { headerIdx = i; break; }
   }
-
-  return { projects, work };
+  if (headerIdx < 0) return work;
+  // Columns: №, Наименование, Дивизион, Контакт, Поступил, Срок, Задача, Ответ1, Ответ2, Ответ3, Статус
+  for (let i = headerIdx + 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (!r[1] || !r[1].trim()) continue; // skip empty name rows
+    const num = parseInt(r[0]);
+    work.push({
+      num: isNaN(num) ? i - headerIdx : num,
+      name: r[1]||'', division: r[2]||'', contact: r[3]||'',
+      deadline: r[5]||'', task: r[6]||'',
+      persons: [r[7],r[8],r[9]].filter(Boolean).join(', '),
+      status: r[10]||''
+    });
+  }
+  return work;
 }
 
 // ── COMPUTE AGGREGATES ───────────────────────────────────────────────────────
@@ -659,9 +651,10 @@ function showTab(t) {
 // ── LOAD ───────────────────────────────────────────────────────────────────────
 async function load() {
   try {
-    const [sumCsv, kpiCsv] = await Promise.all([
+    const [sumCsv, kpiCsv, workCsv] = await Promise.all([
       fetch(URL_SUM).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }),
-      fetch(URL_KPI).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+      fetch(URL_KPI).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }),
+      fetch(URL_WORK).then(r=>r.ok ? r.text() : '').catch(()=>'')
     ]);
 
     const sumRows = parseCSV(sumCsv);
@@ -669,9 +662,12 @@ async function load() {
     const { total, totalVideo, divs, types } = buildFromSummary(divSummary);
 
     const kpiRows = parseCSV(kpiCsv);
-    const { projects, work } = parseKPI(kpiRows);
+    const projects = parseKPI(kpiRows);
 
-    DATA = { divs, types, projects, workProjects: work.filter(p=>p.name), total, totalVideo };
+    const workRows = parseCSV(workCsv);
+    const workProjects = workRows.length > 1 ? parseWork(workRows) : [];
+
+    DATA = { divs, types, projects, workProjects, total, totalVideo };
 
     // Update timestamp
     document.getElementById('updated-ts').textContent = new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
