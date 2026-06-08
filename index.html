@@ -55,19 +55,12 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .chart-card-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#00a8cc;margin-bottom:8px;text-align:center;width:100%}
 /* Horizontal inner layout for div cards */
 .card-inner{display:flex;align-items:center;gap:8px;width:100%}
-.card-leg-col{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
-.card-num-col{display:flex;flex-direction:column;gap:5px;align-items:flex-end;min-width:20px}
+.card-leg-col{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
 .chart-wrap{position:relative;width:120px;height:120px;flex-shrink:0}
-.chart-wrap-lg{position:relative;width:150px;height:150px;flex-shrink:0}
-.leg-row2{display:flex;align-items:center;gap:5px}
+.leg-row2{display:flex;align-items:center;gap:6px}
 .leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-.leg-name2{font-size:11px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.leg-num{font-size:12px;font-weight:700;color:#1a2a4a;line-height:1.6;white-space:nowrap}
-/* Old-style legend for type tab */
-.legend{margin-top:10px;width:100%;display:flex;flex-direction:column;gap:4px}
-.leg-row{display:flex;align-items:center;gap:5px}
-.leg-name{font-size:11px;color:#666;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.leg-cnt{font-size:11px;font-weight:700;color:#1a2a4a}
+.leg-name2{flex:1;font-size:11px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leg-num{font-size:12px;font-weight:700;color:#1a2a4a;min-width:18px;text-align:right;white-space:nowrap}
 
 /* ── MODAL ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
@@ -402,7 +395,7 @@ function makeDonut(idx, labels, data, colors, total){
   charts[id]=new Chart(el.getContext('2d'),{
     type:'doughnut',
     data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:3,borderColor:'#fff'}]},
-    options:{responsive:false,cutout:'67%',
+    options:{responsive:false,cutout:'67%',devicePixelRatio:Math.max(window.devicePixelRatio||1,2),
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw}}}},
     plugins:[{
       id:'ct_'+idx,
@@ -418,31 +411,26 @@ function makeDonut(idx, labels, data, colors, total){
   });
 }
 
-// ── COMPACT CARD HTML (div tab) ───────────────────────────────────────────────
+// ── CARD HTML — unified layout: [legend+nums left] [donut right] ──────────────
 function cardHTML(idx, title, labels, data, colors, total, clickable){
-  const legL=labels.map((l,i)=>`<div class="leg-row2"><div class="leg-dot" style="background:${colors[i]}"></div><span class="leg-name2" title="${l}">${l}</span></div>`).join('');
-  const legR=data.map(v=>`<div class="leg-num">${v}</div>`).join('');
+  const legs=labels.map((l,i)=>`<div class="leg-row2">
+    <div class="leg-dot" style="background:${colors[i]}"></div>
+    <span class="leg-name2" title="${l}">${l}</span>
+    <span class="leg-num">${data[i]}</span>
+  </div>`).join('');
   const cls=clickable?'chart-card':'chart-card no-click';
   const oc=clickable?`onclick="openDiv('${title}')"`:'';
   return`<div class="${cls}" ${oc}>
     <div class="chart-card-title">${title}</div>
     <div class="card-inner">
-      <div class="card-leg-col">${legL}</div>
+      <div class="card-leg-col">${legs}</div>
       <div class="chart-wrap"><canvas id="ch_${idx}" width="120" height="120"></canvas></div>
-      <div class="card-num-col">${legR}</div>
     </div>
   </div>`;
 }
 
-// ── TYPE CARD HTML (vertical, type tab) ───────────────────────────────────────
-function typeCardHTML(idx, title, labels, data, colors, total){
-  const legs=labels.map((l,i)=>`<div class="leg-row"><div class="leg-dot" style="background:${colors[i]}"></div><div class="leg-name" title="${l}">${l}</div><div class="leg-cnt">${data[i]}</div></div>`).join('');
-  return`<div class="chart-card no-click">
-    <div class="chart-card-title">${title}</div>
-    <div class="chart-wrap-lg"><canvas id="ch_${idx}" width="150" height="150"></canvas></div>
-    <div class="legend">${legs}</div>
-  </div>`;
-}
+// Type tab uses the same layout
+const typeCardHTML = cardHTML;
 
 // ── RENDER TAB 1 ──────────────────────────────────────────────────────────────
 function renderDiv(){
@@ -498,7 +486,7 @@ function renderType(){
       DN.forEach(d=>{if(dm[d]){labels.push(d);data.push(dm[d]);colors.push(dc(d));}});
       const tot=data.reduce((a,b)=>a+b,0);
       const idx=offset+(containerId.includes('top')?j:2+j);
-      return typeCardHTML(idx,t,labels,data,colors,tot);
+      return typeCardHTML(idx,t,labels,data,colors,tot,false);
     }).join('');
     setTimeout(()=>{
       types.forEach((t,j)=>{
