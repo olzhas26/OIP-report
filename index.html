@@ -150,17 +150,27 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 
 /* ── DONE PROJECTS SECTION ── */
 .done-section{margin-top:16px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
-.done-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;padding:14px}
-.done-card{background:#f8fafd;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;border:1px solid #e8eef5}
+.done-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:14px}
+.done-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 5px rgba(0,0,0,.07);border:1px solid #e8eef5}
+.done-card-info{padding:10px 14px 10px}
 .done-name{font-size:13px;font-weight:700;color:#1a2a4a;line-height:1.3}
-.done-meta{font-size:11px;color:#888;margin-top:3px}
-.done-photos{display:flex;gap:7px}
-.done-slot{width:72px;height:72px;border-radius:8px;background:#edf2f8;border:2px dashed #c8d6e6;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;transition:border-color .15s}
-.done-slot:hover{border-color:#00a8cc}
-.done-slot img{width:100%;height:100%;object-fit:cover;display:block}
-.done-slot .slot-plus{font-size:20px;color:#c0cfe0;user-select:none;pointer-events:none}
-.slot-del{position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,.55);border-radius:50%;border:none;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.done-meta{font-size:11px;color:#888;margin-top:2px}
 .done-empty{padding:24px;color:#bbb;font-size:13px;text-align:center}
+/* Adaptive photo zone */
+.photo-zone{position:relative;height:200px;display:grid;gap:2px;background:#d8e4ee}
+.pz-empty{grid-template-columns:1fr}
+.pz-1{grid-template-columns:1fr}
+.pz-2{grid-template-columns:1fr 1fr}
+.pz-3{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr}
+.pz-3 .photo-panel:nth-child(1){grid-row:1/3}
+.photo-panel{position:relative;overflow:hidden;cursor:pointer}
+.photo-panel img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-panel.empty{background:#edf3fa;border:2px dashed #b8d0e8;display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s}
+.photo-panel.empty:hover{border-color:#00a8cc;background:#e0f4fb}
+.panel-plus{font-size:28px;color:#b8d0e8;pointer-events:none;user-select:none}
+.slot-del{position:absolute;top:6px;right:6px;width:22px;height:22px;background:rgba(0,0,0,.55);border-radius:50%;border:none;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;z-index:5}
+.zone-add-btn{position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,.88);border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#1a2a4a;cursor:pointer;z-index:5;transition:background .15s}
+.zone-add-btn:hover{background:#fff}
 /* Lightbox */
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;align-items:center;justify-content:center;cursor:pointer}
 .lightbox.open{display:flex}
@@ -646,33 +656,59 @@ function openLightbox(num,slot){
 }
 
 // ── RENDER DONE PROJECTS ──────────────────────────────────────────────────────
+function photoZoneHTML(num){
+  const allSlots=[0,1,2];
+  const filled=allSlots.map(s=>({slot:s,src:getPhoto(num,s)})).filter(x=>x.src);
+  const emptySlots=allSlots.filter(s=>!getPhoto(num,s));
+  const count=filled.length;
+
+  const filledPanel=ph=>`<div class="photo-panel" onclick="openLightbox(${num},${ph.slot})">
+    <img src="${ph.src}" alt="">
+    <button class="slot-del" onclick="event.stopPropagation();removePhoto(${num},${ph.slot})">×</button>
+  </div>`;
+  const emptyPanel=slot=>`<div class="photo-panel empty" onclick="triggerPhotoUpload(${num},${slot})">
+    <span class="panel-plus">+</span>
+  </div>`;
+  const addBtn=slot=>`<button class="zone-add-btn" onclick="triggerPhotoUpload(${num},${slot})">+ фото</button>`;
+
+  if(count===0){
+    return`<div class="photo-zone pz-empty">${emptyPanel(0)}</div>`;
+  }
+  if(count===1){
+    // Single image fills zone; add-btn overlay for second
+    return`<div class="photo-zone pz-1">
+      ${filledPanel(filled[0])}
+      ${emptySlots.length?addBtn(emptySlots[0]):''}
+    </div>`;
+  }
+  if(count===2){
+    // Two equal columns; add-btn for third
+    return`<div class="photo-zone pz-2">
+      ${filled.map(filledPanel).join('')}
+      ${emptySlots.length?addBtn(emptySlots[0]):''}
+    </div>`;
+  }
+  // 3 photos: big left + two stacked right
+  return`<div class="photo-zone pz-3">${filled.map(filledPanel).join('')}</div>`;
+}
+
 function renderDone(){
-  // projects with status "готово" and empty "Неделя" column = closed this week
   const done=DATA.workProjects.filter(p=>p.status==='готово'&&!p.week);
-  // cleanup photos for projects that no longer exist
   cleanupPhotos(new Set(DATA.workProjects.map(p=>p.num)));
   const grid=document.getElementById('done-grid');
   if(!grid)return;
   if(!done.length){
-    grid.innerHTML='<div class="done-empty">Нет выполненных проектов за эту неделю.<br>Проекты с пустой колонкой «Неделя» и статусом «готово» появятся здесь.</div>';
+    grid.innerHTML='<div class="done-empty">Нет выполненных проектов за эту неделю.<br>Проекты со статусом «готово» и пустой колонкой «Неделя» появятся здесь.</div>';
     return;
   }
   grid.innerHTML=done.map(p=>{
-    const slots=[0,1,2].map(s=>{
-      const src=getPhoto(p.num,s);
-      if(src)return`<div class="done-slot" onclick="openLightbox(${p.num},${s})">
-        <img src="${src}" alt="">
-        <button class="slot-del" onclick="event.stopPropagation();removePhoto(${p.num},${s})">×</button>
-      </div>`;
-      return`<div class="done-slot" onclick="triggerPhotoUpload(${p.num},${s})"><span class="slot-plus">+</span></div>`;
-    }).join('');
     const divC=dc(DN_MAP[p.division]||p.division);
     return`<div class="done-card">
-      <div>
+      <div class="done-card-info">
         <div class="done-name">${p.name}</div>
         <div class="done-meta"><span style="color:${divC};font-weight:700">${p.division||'—'}</span>${p.task?' · '+p.task:''}</div>
       </div>
-      <div class="done-photos">${slots}</div>
+      ${photoZoneHTML(p.num)}
     </div>`;
   }).join('');
 }
