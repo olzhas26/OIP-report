@@ -87,8 +87,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 /* ── WEEKLY TAB ── */
 .weekly-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .weekly-header .page-title{margin-bottom:0}
-.snap-btn{padding:8px 20px;background:#1a2a4a;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:background .15s;white-space:nowrap}
-.snap-btn:hover{background:#00a8cc}
+
 .snap-info{min-height:30px;margin-bottom:14px}
 .snap-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;background:#e0f7fa;color:#006064}
 .snap-none{background:#fff8e1;color:#b45309}
@@ -209,7 +208,6 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 <div id="tab-weekly" class="page">
   <div class="weekly-header">
     <div class="page-title" style="margin-bottom:0">Недельный отчёт <span>2026</span></div>
-    <button class="snap-btn" onclick="saveWeeklySnapshot()">📌 Зафиксировать неделю</button>
   </div>
   <div id="weekly-snap-info" class="snap-info"></div>
   <div class="weekly-main-grid">
@@ -274,6 +272,7 @@ const BASE_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/t
 const URL_KPI  = BASE_URL + encodeURIComponent('Отчет KPI');
 const URL_SUM  = BASE_URL + encodeURIComponent('Сводка типов');
 const URL_WORK = BASE_URL + encodeURIComponent('Проекты в работе');
+const URL_PREV = BASE_URL + encodeURIComponent('Прошлая неделя');
 
 // ── TASK WEIGHTS (person-days per task unit) ─────────────────────────────────
 // Order matters — more specific patterns first
@@ -287,7 +286,6 @@ const TASK_WEIGHTS = [
   {keys:['посадка'],                                  label:'Посадка',           weight:0.5},
 ];
 const DEPT_CAPACITY = 50; // 10 чел × 5 дней
-const SNAPSHOT_KEY  = 'oip_weekly_snapshot';
 
 // ── COLORS ──────────────────────────────────────────────────────────────────
 const TC = {Концепт:'#1e3a6b',Посадка:'#f0a030',Визуализация:'#f5d8a8',Планировки:'#9ab8cc',ЭП:'#c8dff0','Без типа':'#e8e8e8'};
@@ -302,7 +300,7 @@ function dc(n){const i=DN.indexOf(n);return i>=0?DC[i]:'#ccc';}
 function bc(t){return{Концепт:'b-k',Посадка:'b-p',Визуализация:'b-v',Планировки:'b-pl',Эскиз:'b-e'}[t]||'b-x';}
 
 // ── STATE ────────────────────────────────────────────────────────────────────
-let DATA = {divs:{}, types:{}, projects:[], workProjects:[], total:0, totalVideo:0};
+let DATA = {divs:{}, types:{}, projects:[], workProjects:[], total:0, totalVideo:0, prevDivs:null, prevTypes:null, prevTotal:null};
 let workFilter = 'в работе';
 const charts = {};
 
@@ -547,37 +545,7 @@ function calcLoad(workProjects){
   };
 }
 
-// ── SNAPSHOT FUNCTIONS ────────────────────────────────────────────────────────
-function getWeekKey(){
-  const now=new Date();
-  const onejan=new Date(now.getFullYear(),0,1);
-  const week=Math.ceil((((now-onejan)/86400000)+onejan.getDay()+1)/7);
-  return`${now.getFullYear()}-W${String(week).padStart(2,'0')}`;
-}
-
-function saveWeeklySnapshot(){
-  const snapshot={
-    key:getWeekKey(),
-    date:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long'}),
-    divs:JSON.parse(JSON.stringify(DATA.divs)),
-    types:JSON.parse(JSON.stringify(DATA.types)),
-    total:DATA.total
-  };
-  const history=JSON.parse(localStorage.getItem(SNAPSHOT_KEY)||'[]');
-  const idx=history.findIndex(s=>s.key===snapshot.key);
-  if(idx>=0)history[idx]=snapshot; else history.push(snapshot);
-  if(history.length>12)history.shift();
-  localStorage.setItem(SNAPSHOT_KEY,JSON.stringify(history));
-  renderWeekly();
-}
-
-function getLastSnapshot(){
-  const history=JSON.parse(localStorage.getItem(SNAPSHOT_KEY)||'[]');
-  if(!history.length)return null;
-  const curKey=getWeekKey();
-  const prev=history.filter(s=>s.key<curKey);
-  return prev.length?prev[prev.length-1]:null;
-}
+// ── PREVIOUS WEEK HELPERS ─────────────────────────────────────────────────────
 
 function deltaHtml(delta){
   if(delta===0)return`<div class="delta-badge delta-zero">±0</div>`;
@@ -587,12 +555,12 @@ function deltaHtml(delta){
 
 // ── RENDER TAB 3 ──────────────────────────────────────────────────────────────
 function renderWeekly(){
-  const last=getLastSnapshot();
+  const hasPrev=DATA.prevDivs!==null;
 
-  // Snapshot info bar
-  document.getElementById('weekly-snap-info').innerHTML=last
-    ?`<span class="snap-badge">📌 Сравнение с: ${last.date} (${last.key})</span>`
-    :`<span class="snap-badge snap-none">Нет снимка прошлой недели — нажмите «Зафиксировать неделю» для начала отслеживания</span>`;
+  // Info bar
+  document.getElementById('weekly-snap-info').innerHTML=hasPrev
+    ?`<span class="snap-badge">📊 Сравнение с прошлой неделей</span>`
+    :`<span class="snap-badge snap-none">Нет данных — добавьте лист «Прошлая неделя» в таблицу</span>`;
 
   // ── Load gauge ──
   const{curLoad,curPct,curBreakdown,nextLoad,nextPct,nextBreakdown}=calcLoad(DATA.workProjects);
@@ -637,30 +605,30 @@ function renderWeekly(){
   document.getElementById('div-delta').innerHTML=
     DN.filter(d=>DATA.divs[d]).map(d=>{
       const cur=(DATA.divs[d]||{})['Всего']||0;
-      const prev=last?((last.divs[d]||{})['Всего']||0):null;
+      const prevVal=hasPrev?((DATA.prevDivs[d]||{})['Всего']||0):null;
       return`<div class="delta-row">
         <div class="delta-dot" style="background:${dc(d)}"></div>
         <div class="delta-name">${d}</div>
         <div class="delta-val">${cur}</div>
-        ${prev!==null?deltaHtml(cur-prev):''}
+        ${prevVal!==null?deltaHtml(cur-prevVal):''}
       </div>`;
     }).join('')+`<div class="delta-total-row">
       <div></div>
       <div class="delta-name" style="font-weight:800;color:#1a2a4a">Итого</div>
       <div class="delta-val" style="font-weight:800">${DATA.total}</div>
-      ${last?deltaHtml(DATA.total-(last.total||0)):''}
+      ${hasPrev?deltaHtml(DATA.total-(DATA.prevTotal||0)):''}
     </div>`;
 
   // ── Type deltas ──
   document.getElementById('type-delta').innerHTML=
     TYPE_ORDER.map(t=>{
       const cur=DATA.types[t]||0;
-      const prev=last?(last.types[t]||0):null;
+      const prevVal=hasPrev?(DATA.prevTypes[t]||0):null;
       return`<div class="delta-row">
         <div class="delta-dot" style="background:${TC[t]}"></div>
         <div class="delta-name">${t}</div>
         <div class="delta-val">${cur}</div>
-        ${prev!==null?deltaHtml(cur-prev):''}
+        ${prevVal!==null?deltaHtml(cur-prevVal):''}
       </div>`;
     }).join('');
 }
@@ -755,16 +723,21 @@ function showTab(t){
 // ── LOAD DATA ─────────────────────────────────────────────────────────────────
 async function load(){
   try{
-    const[sumCsv,kpiCsv,workCsv]=await Promise.all([
+    const[sumCsv,kpiCsv,workCsv,prevCsv]=await Promise.all([
       fetch(URL_SUM).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text();}),
       fetch(URL_KPI).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text();}),
-      fetch(URL_WORK).then(r=>r.ok?r.text():'').catch(()=>'')
+      fetch(URL_WORK).then(r=>r.ok?r.text():'').catch(()=>''),
+      fetch(URL_PREV).then(r=>r.ok?r.text():'').catch(()=>'')
     ]);
     const{total,totalVideo,divs,types}=buildFromSummary(parseSummary(parseCSV(sumCsv)));
     const projects=parseKPI(parseCSV(kpiCsv));
     const workRows=parseCSV(workCsv);
     const workProjects=workRows.length>1?parseWork(workRows):[];
-    DATA={divs,types,projects,workProjects,total,totalVideo};
+    const prevData=prevCsv?buildFromSummary(parseSummary(parseCSV(prevCsv))):null;
+    DATA={divs,types,projects,workProjects,total,totalVideo,
+      prevDivs:prevData?prevData.divs:null,
+      prevTypes:prevData?prevData.types:null,
+      prevTotal:prevData?prevData.total:null};
     document.getElementById('updated-ts').textContent=
       new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     document.getElementById('loading').style.display='none';
@@ -820,7 +793,8 @@ async function load(){
         {num:31,name:'Школы в Актобе концепты',        division:'Запад',  task:'Разработка концепта',   persons:'',                      deadline:'',    status:'в очереди'},
         {num:32,name:'Поликлиника Бигвиль фасад',      division:'Алматы', task:'Разработка фасада',     persons:'',                      deadline:'',    status:'в очереди'},
       ],
-      total:238, totalVideo:26
+      total:238, totalVideo:26,
+      prevDivs:null, prevTypes:null, prevTotal:null
     };
     document.getElementById('loading').style.display='none';
     document.getElementById('updated-ts').textContent='кэш ·';
