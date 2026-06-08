@@ -326,6 +326,7 @@ const TASK_WEIGHTS = [
 const DEPT_CAPACITY = 50; // 10 чел × 5 дней
 // Q1 baseline (Концепт:32 + Визуализации:41 + Посадка:34 + ЭП:8)
 const Q1_BASELINE = 115;
+const GAS_URL='https://script.google.com/macros/s/AKfycbw8whT5t_l2GUX96V8prbp5H6VS4rXNO_8O69b56i46PKG4F9jOwy8xPaeKutN66vXC/exec';
 
 // ── COLORS ──────────────────────────────────────────────────────────────────
 const TC = {Концепт:'#1e3a6b',Посадка:'#f0a030',Визуализация:'#f5d8a8',Планировки:'#9ab8cc',ЭП:'#c8dff0',Видео:'#4fb3d9','Без типа':'#e8e8e8'};
@@ -394,19 +395,28 @@ function parseKPI(rows){
   return projects;
 }
 
+function parsePhotoUrls(val){
+  const urls=['','',''];
+  if(!val)return urls;
+  try{const a=JSON.parse(val);if(Array.isArray(a)){a.slice(0,3).forEach((u,i)=>urls[i]=u||'');}}
+  catch(e){if(val)urls[0]=val;}
+  return urls;
+}
 function parseWork(rows){
   const work=[]; let hi=-1;
   for(let i=0;i<rows.length;i++){if(rows[i].some(c=>c==='Наименование'||c==='№ п/п')){hi=i;break;}}
   if(hi<0)return work;
   const header=rows[hi];
   const weekCol=header.findIndex(h=>h&&h.trim()==='Неделя');
+  const photoCol=header.findIndex(h=>h&&h.trim()==='Сылка на картинки');
   for(let i=hi+1;i<rows.length;i++){
     const r=rows[i];
     if(!r[1]||!r[1].trim())continue;
     const num=parseInt(r[0]);
     work.push({num:isNaN(num)?i-hi:num,name:r[1]||'',division:r[2]||'',contact:r[3]||'',
       deadline:r[5]||'',task:r[6]||'',persons:[r[7],r[8],r[9]].filter(Boolean).join(', '),
-      status:r[10]||'',week:weekCol>=0?(r[weekCol]||''):''});
+      status:r[10]||'',week:weekCol>=0?(r[weekCol]||''):'',
+      photos:photoCol>=0?parsePhotoUrls(r[photoCol]||''):['','','']});
   }
   return work;
 }
@@ -621,19 +631,33 @@ function calcLoad(workProjects){
   };
 }
 
-// ── PHOTO STORAGE (IndexedDB-free, localStorage) ──────────────────────────────
-const PHOTO_PFX='oip_ph_';
-function photoKey(num,slot){return`${PHOTO_PFX}${num}_${slot}`;}
-function savePhoto(num,slot,b64){try{localStorage.setItem(photoKey(num,slot),b64);}catch(e){console.warn('localStorage full',e);}}
-function getPhoto(num,slot){return localStorage.getItem(photoKey(num,slot));}
-function delPhoto(num,slot){localStorage.removeItem(photoKey(num,slot));}
-function cleanupPhotos(activeNums){
-  const keys=[];
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(PHOTO_PFX))keys.push(k);}
-  keys.forEach(k=>{
-    const parts=k.slice(PHOTO_PFX.length).split('_');
-    if(!activeNums.has(parseInt(parts[0])))localStorage.removeItem(k);
-  });
+// ── PHOTO STORAGE (server-side via Apps Script + local cache for immediate UX) ──
+const _localPhotoCache={}; // key `${num}_${slot}`: url | 'loading' | ''
+const _projectMap={};      // num → project, built in renderDone
+
+function getPhotoUrl(project,slot){
+  const key=`${project.num}_${slot}`;
+  if(_localPhotoCache[key]!==undefined)return _localPhotoCache[key];
+  return(project.photos&&project.photos[slot])||'';
+}
+
+async function uploadPhotoToServer(num,slot,b64){
+  _localPhotoCache[`${num}_${slot}`]='loading';
+  renderDone();
+  try{
+    const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'upload',projectNum:num,slot,imageData:b64})});
+    const data=await r.json();
+    if(data.url){_localPhotoCache[`${num}_${slot}`]=data.url;}
+    else{delete _localPhotoCache[`${num}_${slot}`];alert('Ошибка загрузки: '+(data.error||'неизвестная ошибка'));}
+  }catch(e){delete _localPhotoCache[`${num}_${slot}`];alert('Ошибка соединения с сервером');}
+  renderDone();
+}
+
+function removePhoto(num,slot){
+  _localPhotoCache[`${num}_${slot}`]='';
+  renderDone();
+  fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'delete',projectNum:num,slot})})
+    .catch(e=>console.warn('delete failed',e));
 }
 
 // ── FILE INPUT SINGLETON ──────────────────────────────────────────────────────
@@ -654,7 +678,7 @@ const _fi=(()=>{const el=document.createElement('input');el.type='file';el.accep
         const cv=document.createElement('canvas');cv.width=w;cv.height=h;
         cv.getContext('2d').drawImage(img,0,0,w,h);
         const b64=cv.toDataURL('image/jpeg',0.78);
-        savePhoto(num,slot,b64);renderDone();
+        uploadPhotoToServer(num,slot,b64);
       };
       img.src=ev.target.result;
     };
@@ -663,53 +687,68 @@ const _fi=(()=>{const el=document.createElement('input');el.type='file';el.accep
   document.body.appendChild(el);return el;
 })();
 function triggerPhotoUpload(num,slot){_photoTarget={num,slot};_fi.click();}
-function removePhoto(num,slot){delPhoto(num,slot);renderDone();}
 function openLightbox(num,slot){
-  const src=getPhoto(num,slot);if(!src)return;
+  const p=_projectMap[num];if(!p)return;
+  const src=getPhotoUrl(p,slot);if(!src||src==='loading')return;
   const lb=document.getElementById('lightbox');
   lb.querySelector('img').src=src;lb.classList.add('open');
 }
 
 // ── RENDER DONE PROJECTS ──────────────────────────────────────────────────────
-function photoZoneHTML(num){
+function photoZoneHTML(project){
+  const num=project.num;
   const allSlots=[0,1,2];
-  const filled=allSlots.map(s=>({slot:s,src:getPhoto(num,s)})).filter(x=>x.src);
-  const emptySlots=allSlots.filter(s=>!getPhoto(num,s));
-  const count=filled.length;
+  const slotUrls=allSlots.map(s=>({slot:s,src:getPhotoUrl(project,s)}));
+  const filled=slotUrls.filter(x=>x.src&&x.src!=='loading');
+  const loadingSlots=slotUrls.filter(x=>x.src==='loading');
+  const emptySlots=slotUrls.filter(x=>!x.src).map(x=>x.slot);
+  const count=filled.length+(loadingSlots.length>0?1:0); // treat loading as filled for layout
 
   const filledPanel=ph=>`<div class="photo-panel" onclick="openLightbox(${num},${ph.slot})">
     <img src="${ph.src}" alt="">
     <button class="slot-del" onclick="event.stopPropagation();removePhoto(${num},${ph.slot})">×</button>
+  </div>`;
+  const loadingPanel=`<div class="photo-panel" style="background:#edf3fa;display:flex;align-items:center;justify-content:center">
+    <div class="spin" style="width:24px;height:24px;border-width:2px"></div>
   </div>`;
   const emptyPanel=slot=>`<div class="photo-panel empty" onclick="triggerPhotoUpload(${num},${slot})">
     <span class="panel-plus">+</span>
   </div>`;
   const addBtn=slot=>`<button class="zone-add-btn" onclick="triggerPhotoUpload(${num},${slot})">+ фото</button>`;
 
-  if(count===0){
+  const renderSlot=s=>{
+    if(s.src==='loading')return loadingPanel;
+    if(s.src)return filledPanel(s);
+    return'';
+  };
+
+  const effectiveCount=filled.length+loadingSlots.length;
+  if(effectiveCount===0){
     return`<div class="photo-zone pz-empty">${emptyPanel(0)}</div>`;
   }
-  if(count===1){
-    // Single image fills zone; add-btn overlay for second
+  if(effectiveCount===1){
+    const s=filled[0]||loadingSlots[0];
     return`<div class="photo-zone pz-1">
-      ${filledPanel(filled[0])}
+      ${renderSlot(s)}
       ${emptySlots.length?addBtn(emptySlots[0]):''}
     </div>`;
   }
-  if(count===2){
-    // Two equal columns; add-btn for third
+  if(effectiveCount===2){
+    const twoSlots=[...filled,...loadingSlots].slice(0,2);
     return`<div class="photo-zone pz-2">
-      ${filled.map(filledPanel).join('')}
+      ${twoSlots.map(renderSlot).join('')}
       ${emptySlots.length?addBtn(emptySlots[0]):''}
     </div>`;
   }
-  // 3 photos: big left + two stacked right
-  return`<div class="photo-zone pz-3">${filled.map(filledPanel).join('')}</div>`;
+  // 3: big left + two stacked right
+  const threeSlots=[...filled,...loadingSlots].slice(0,3);
+  return`<div class="photo-zone pz-3">${threeSlots.map(renderSlot).join('')}</div>`;
 }
 
 function renderDone(){
   const done=DATA.workProjects.filter(p=>p.status==='готово'&&!p.week);
-  cleanupPhotos(new Set(DATA.workProjects.map(p=>p.num)));
+  // Build project lookup map for openLightbox
+  DATA.workProjects.forEach(p=>{_projectMap[p.num]=p;});
   const grid=document.getElementById('done-grid');
   if(!grid)return;
   if(!done.length){
@@ -723,7 +762,7 @@ function renderDone(){
         <div class="done-name">${p.name}</div>
         <div class="done-meta"><span style="color:${divC};font-weight:700">${p.division||'—'}</span>${p.task?' · '+p.task:''}</div>
       </div>
-      ${photoZoneHTML(p.num)}
+      ${photoZoneHTML(p)}
     </div>`;
   }).join('');
 }
