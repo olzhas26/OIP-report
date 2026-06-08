@@ -148,6 +148,24 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .sp-done{background:#e8f5e9;color:#1b5e20}
 .no-data{text-align:center;padding:40px;color:#aaa;font-size:13px}
 
+/* ── DONE PROJECTS SECTION ── */
+.done-section{margin-top:16px;background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+.done-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;padding:14px}
+.done-card{background:#f8fafd;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;border:1px solid #e8eef5}
+.done-name{font-size:13px;font-weight:700;color:#1a2a4a;line-height:1.3}
+.done-meta{font-size:11px;color:#888;margin-top:3px}
+.done-photos{display:flex;gap:7px}
+.done-slot{width:72px;height:72px;border-radius:8px;background:#edf2f8;border:2px dashed #c8d6e6;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;transition:border-color .15s}
+.done-slot:hover{border-color:#00a8cc}
+.done-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.done-slot .slot-plus{font-size:20px;color:#c0cfe0;user-select:none;pointer-events:none}
+.slot-del{position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,.55);border-radius:50%;border:none;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.done-empty{padding:24px;color:#bbb;font-size:13px;text-align:center}
+/* Lightbox */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;align-items:center;justify-content:center;cursor:pointer}
+.lightbox.open{display:flex}
+.lightbox img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 60px rgba(0,0,0,.4)}
+
 @media(max-width:960px){
   .report-body{grid-template-columns:1fr}
   .stats-panel{border-right:none;border-bottom:1px solid #dde8f4;padding-bottom:14px;flex-direction:row;flex-wrap:wrap;gap:14px}
@@ -199,7 +217,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
       <div><div class="stat-lbl">Видео для<br>концептов</div><div class="stat-val" id="t-video" style="font-size:32px">—</div><div class="stat-sub" id="t-video-pct"></div></div>
     </div>
     <div>
-      <div class="charts-grid g2" id="type-charts-top"></div>
+      <div class="charts-grid g3" id="type-charts-top"></div>
       <div class="charts-grid g3b" id="type-charts-bot"></div>
     </div>
   </div>
@@ -222,6 +240,15 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
       <div id="type-delta"></div>
     </div>
   </div>
+  <div class="done-section">
+    <div class="delta-header">Выполненные работы недели</div>
+    <div id="done-grid" class="done-grid"></div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="this.classList.remove('open')">
+  <img src="" alt="">
 </div>
 
 <!-- ──────────── TAB 4: Проекты в работе ──────────── -->
@@ -291,8 +318,8 @@ const DEPT_CAPACITY = 50; // 10 чел × 5 дней
 const Q1_BASELINE = 115;
 
 // ── COLORS ──────────────────────────────────────────────────────────────────
-const TC = {Концепт:'#1e3a6b',Посадка:'#f0a030',Визуализация:'#f5d8a8',Планировки:'#9ab8cc',ЭП:'#c8dff0','Без типа':'#e8e8e8'};
-const TYPE_ORDER = ['Концепт','Посадка','Визуализация','ЭП','Планировки'];
+const TC = {Концепт:'#1e3a6b',Посадка:'#f0a030',Визуализация:'#f5d8a8',Планировки:'#9ab8cc',ЭП:'#c8dff0',Видео:'#4fb3d9','Без типа':'#e8e8e8'};
+const TYPE_ORDER = ['Концепт','Посадка','Визуализация','ЭП','Планировки','Видео'];
 // Division colors — 6 after merge
 const DC = ['#1e3a6b','#4a80c0','#f0a030','#f5d8a8','#9ab8cc','#d0d8e8'];
 const DN = ['Центр','Алматы','Юг','Запад','РДС','Ташкент / Другое'];
@@ -361,12 +388,15 @@ function parseWork(rows){
   const work=[]; let hi=-1;
   for(let i=0;i<rows.length;i++){if(rows[i].some(c=>c==='Наименование'||c==='№ п/п')){hi=i;break;}}
   if(hi<0)return work;
+  const header=rows[hi];
+  const weekCol=header.findIndex(h=>h&&h.trim()==='Неделя');
   for(let i=hi+1;i<rows.length;i++){
     const r=rows[i];
     if(!r[1]||!r[1].trim())continue;
     const num=parseInt(r[0]);
     work.push({num:isNaN(num)?i-hi:num,name:r[1]||'',division:r[2]||'',contact:r[3]||'',
-      deadline:r[5]||'',task:r[6]||'',persons:[r[7],r[8],r[9]].filter(Boolean).join(', '),status:r[10]||''});
+      deadline:r[5]||'',task:r[6]||'',persons:[r[7],r[8],r[9]].filter(Boolean).join(', '),
+      status:r[10]||'',week:weekCol>=0?(r[weekCol]||''):''});
   }
   return work;
 }
@@ -517,7 +547,7 @@ function renderType(){
       const labels=[],data=[],colors=[];
       DN.forEach(d=>{if(dm[d]){labels.push(d);data.push(dm[d]);colors.push(dc(d));}});
       const tot=data.reduce((a,b)=>a+b,0);
-      const idx=offset+(containerId.includes('top')?j:2+j);
+      const idx=offset+(containerId.includes('top')?j:3+j);
       return typeCardHTML(idx,t,labels,data,colors,tot,false);
     }).join('');
     setTimeout(()=>{
@@ -527,12 +557,12 @@ function renderType(){
         DN.forEach(d=>{if(dm[d]){labels.push(d);data.push(dm[d]);colors.push(dc(d));}});
         const tot=data.reduce((a,b)=>a+b,0);
         const typeDelta=prevTypes?(tot-(prevTypes[t]||0)):null;
-        makeDonut(offset+(containerId.includes('top')?j:2+j),labels,data,colors,tot,typeDelta);
+        makeDonut(offset+(containerId.includes('top')?j:3+j),labels,data,colors,tot,typeDelta);
       });
     },80);
   }
-  makeTypeCards(TYPE_ORDER.slice(0,2),'type-charts-top');
-  makeTypeCards(TYPE_ORDER.slice(2),'type-charts-bot');
+  makeTypeCards(TYPE_ORDER.slice(0,3),'type-charts-top');
+  makeTypeCards(TYPE_ORDER.slice(3),'type-charts-bot');
 }
 
 // ── LOAD CALCULATION ─────────────────────────────────────────────────────────
@@ -579,6 +609,72 @@ function calcLoad(workProjects){
     curLoad, curPct:Math.round(curLoad/DEPT_CAPACITY*100), curBreakdown,
     nextLoad, nextPct:Math.round(nextLoad/DEPT_CAPACITY*100), nextBreakdown
   };
+}
+
+// ── PHOTO STORAGE (IndexedDB-free, localStorage) ──────────────────────────────
+const PHOTO_PFX='oip_ph_';
+function photoKey(num,slot){return`${PHOTO_PFX}${num}_${slot}`;}
+function savePhoto(num,slot,b64){try{localStorage.setItem(photoKey(num,slot),b64);}catch(e){alert('Фото слишком большое для хранения в браузере. Попробуйте меньший файл.');}}
+function getPhoto(num,slot){return localStorage.getItem(photoKey(num,slot));}
+function delPhoto(num,slot){localStorage.removeItem(photoKey(num,slot));}
+function cleanupPhotos(activeNums){
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(PHOTO_PFX))keys.push(k);}
+  keys.forEach(k=>{
+    const parts=k.slice(PHOTO_PFX.length).split('_');
+    if(!activeNums.has(parseInt(parts[0])))localStorage.removeItem(k);
+  });
+}
+
+// ── FILE INPUT SINGLETON ──────────────────────────────────────────────────────
+let _photoTarget=null;
+const _fi=(()=>{const el=document.createElement('input');el.type='file';el.accept='image/*';el.style.display='none';
+  el.addEventListener('change',()=>{
+    const f=el.files[0];if(!f||!_photoTarget)return;
+    const r=new FileReader();
+    r.onload=e=>{savePhoto(_photoTarget.num,_photoTarget.slot,e.target.result);renderDone();};
+    r.readAsDataURL(f);el.value='';
+  });
+  document.body.appendChild(el);return el;
+})();
+function triggerPhotoUpload(num,slot){_photoTarget={num,slot};_fi.click();}
+function removePhoto(num,slot){delPhoto(num,slot);renderDone();}
+function openLightbox(num,slot){
+  const src=getPhoto(num,slot);if(!src)return;
+  const lb=document.getElementById('lightbox');
+  lb.querySelector('img').src=src;lb.classList.add('open');
+}
+
+// ── RENDER DONE PROJECTS ──────────────────────────────────────────────────────
+function renderDone(){
+  // projects with status "готово" and empty "Неделя" column = closed this week
+  const done=DATA.workProjects.filter(p=>p.status==='готово'&&!p.week);
+  // cleanup photos for projects that no longer exist
+  cleanupPhotos(new Set(DATA.workProjects.map(p=>p.num)));
+  const grid=document.getElementById('done-grid');
+  if(!grid)return;
+  if(!done.length){
+    grid.innerHTML='<div class="done-empty">Нет выполненных проектов за эту неделю.<br>Проекты с пустой колонкой «Неделя» и статусом «готово» появятся здесь.</div>';
+    return;
+  }
+  grid.innerHTML=done.map(p=>{
+    const slots=[0,1,2].map(s=>{
+      const src=getPhoto(p.num,s);
+      if(src)return`<div class="done-slot" onclick="openLightbox(${p.num},${s})">
+        <img src="${src}" alt="">
+        <button class="slot-del" onclick="event.stopPropagation();removePhoto(${p.num},${s})">×</button>
+      </div>`;
+      return`<div class="done-slot" onclick="triggerPhotoUpload(${p.num},${s})"><span class="slot-plus">+</span></div>`;
+    }).join('');
+    const divC=dc(DN_MAP[p.division]||p.division);
+    return`<div class="done-card">
+      <div>
+        <div class="done-name">${p.name}</div>
+        <div class="done-meta"><span style="color:${divC};font-weight:700">${p.division||'—'}</span>${p.task?' · '+p.task:''}</div>
+      </div>
+      <div class="done-photos">${slots}</div>
+    </div>`;
+  }).join('');
 }
 
 // ── PREVIOUS WEEK HELPERS ─────────────────────────────────────────────────────
@@ -667,6 +763,8 @@ function renderWeekly(){
         ${prevVal!==null?deltaHtml(cur-prevVal):''}
       </div>`;
     }).join('');
+
+  renderDone();
 }
 
 // ── RENDER TAB 4 ──────────────────────────────────────────────────────────────
