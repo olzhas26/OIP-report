@@ -40,6 +40,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .stat-val{font-size:38px;font-weight:900;color:#1a2a4a;line-height:1}
 .stat-sub{font-size:12px;color:#00a8cc;font-weight:700;margin-top:2px}
 .stat-hint{font-size:11px;color:#bbb;margin-top:2px}
+.stat-delta{font-size:16px;font-weight:700;color:#00a8cc;margin-top:2px;min-height:20px}
 
 /* ── CHARTS GRID ── */
 .charts-grid{display:grid;gap:10px}
@@ -59,8 +60,8 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .chart-wrap{position:relative;width:120px;height:120px;flex-shrink:0}
 .leg-row2{display:flex;align-items:center;gap:6px}
 .leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
-.leg-name2{flex:1;font-size:11px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.leg-num{font-size:12px;font-weight:700;color:#1a2a4a;min-width:18px;text-align:right;white-space:nowrap}
+.leg-name2{font-size:11px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:1;min-width:0}
+.leg-num{font-size:12px;font-weight:700;color:#1a2a4a;white-space:nowrap;flex-shrink:0}
 
 /* ── MODAL ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
@@ -180,9 +181,9 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
   <div class="page-title">Отдел инициации проектов <span>2026</span></div>
   <div class="report-body">
     <div class="stats-panel">
-      <div><div class="stat-lbl">Общее кол-во<br>запросов</div><div class="stat-val" id="s-total">—</div></div>
+      <div><div class="stat-lbl">Общее кол-во<br>запросов</div><div class="stat-val" id="s-total">—</div><div class="stat-delta" id="s-total-delta"></div></div>
+      <div><div class="stat-lbl">Запросов Q2</div><div class="stat-val" id="s-q2" style="font-size:32px">—</div><div class="stat-delta" id="s-q2-delta"></div></div>
       <div><div class="stat-lbl">С видео</div><div class="stat-val" id="s-video" style="font-size:32px">—</div><div class="stat-hint" id="s-video-pct"></div></div>
-      <div><div class="stat-lbl">Дивизионов</div><div class="stat-val" id="s-divs" style="font-size:32px">—</div></div>
     </div>
     <div class="charts-grid g3" id="div-charts"></div>
   </div>
@@ -193,7 +194,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
   <div class="page-title">Отдел инициации проектов <span>2026</span></div>
   <div class="report-body">
     <div class="stats-panel">
-      <div><div class="stat-lbl">Общее кол-во<br>запросов</div><div class="stat-val" id="t-total">—</div></div>
+      <div><div class="stat-lbl">Общее кол-во<br>запросов</div><div class="stat-val" id="t-total">—</div><div class="stat-delta" id="t-total-delta"></div></div>
       <div><div class="stat-lbl">Процент<br>концептов</div><div class="stat-val" id="t-konc" style="font-size:32px">—</div><div class="stat-sub" id="t-konc-pct"></div></div>
       <div><div class="stat-lbl">Видео для<br>концептов</div><div class="stat-val" id="t-video" style="font-size:32px">—</div><div class="stat-sub" id="t-video-pct"></div></div>
     </div>
@@ -286,6 +287,8 @@ const TASK_WEIGHTS = [
   {keys:['посадка'],                                  label:'Посадка',           weight:0.5},
 ];
 const DEPT_CAPACITY = 50; // 10 чел × 5 дней
+// Q1 baseline (Концепт:32 + Визуализации:41 + Посадка:34 + ЭП:8)
+const Q1_BASELINE = 115;
 
 // ── COLORS ──────────────────────────────────────────────────────────────────
 const TC = {Концепт:'#1e3a6b',Посадка:'#f0a030',Визуализация:'#f5d8a8',Планировки:'#9ab8cc',ЭП:'#c8dff0','Без типа':'#e8e8e8'};
@@ -383,13 +386,26 @@ function buildFromSummary(divSummary){
   return{divs,types,total,totalVideo};
 }
 
+// ── DELTA FORMATTER ───────────────────────────────────────────────────────────
+function fmtDelta(n){
+  if(n===null||n===undefined)return'';
+  if(n===0)return'(±0)';
+  return n>0?`(+${n})`:`(${n})`;
+}
+function fmtDeltaHtml(n){
+  if(n===null||n===undefined)return'';
+  const s=fmtDelta(n);
+  return s;
+}
+
 // ── DONUT FACTORY ─────────────────────────────────────────────────────────────
-function makeDonut(idx, labels, data, colors, total){
+function makeDonut(idx, labels, data, colors, total, delta){
   const id='ch_'+idx;
   if(charts[id]){charts[id].destroy();delete charts[id];}
   const el=document.getElementById(id);
   if(!el)return;
   const sz=parseInt(el.getAttribute('width'))||120;
+  const hasDelta=delta!==null&&delta!==undefined;
   charts[id]=new Chart(el.getContext('2d'),{
     type:'doughnut',
     data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:3,borderColor:'#fff'}]},
@@ -399,10 +415,20 @@ function makeDonut(idx, labels, data, colors, total){
       id:'ct_'+idx,
       afterDraw(chart){
         const{ctx,chartArea:{width,height,left,top}}=chart;
+        const cx=left+width/2, cy=top+height/2;
         ctx.save();
-        ctx.font=`bold ${sz<=130?20:26}px Segoe UI,Arial,sans-serif`;
-        ctx.fillStyle='#1a2a4a';ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.fillText(String(total),left+width/2,top+height/2);
+        ctx.textAlign='center';
+        const numSz=sz<=130?20:26;
+        // Shift total up if we have delta
+        const yOff=hasDelta?-8:0;
+        ctx.font=`bold ${numSz}px Segoe UI,Arial,sans-serif`;
+        ctx.fillStyle='#1a2a4a';ctx.textBaseline='middle';
+        ctx.fillText(String(total),cx,cy+yOff);
+        if(hasDelta){
+          ctx.font=`bold ${sz<=130?10:12}px Segoe UI,Arial,sans-serif`;
+          ctx.fillStyle='#00a8cc';
+          ctx.fillText(fmtDelta(delta),cx,cy+yOff+numSz*0.8);
+        }
         ctx.restore();
       }
     }]
@@ -432,11 +458,16 @@ const typeCardHTML = cardHTML;
 
 // ── RENDER TAB 1 ──────────────────────────────────────────────────────────────
 function renderDiv(){
-  const{divs,total,totalVideo}=DATA;
+  const{divs,total,totalVideo,prevDivs,prevTotal}=DATA;
+  const weekDelta=prevTotal!==null?total-prevTotal:null;
+  const q2=total-Q1_BASELINE;
+
   document.getElementById('s-total').textContent=total||'—';
+  document.getElementById('s-total-delta').textContent=fmtDelta(weekDelta);
+  document.getElementById('s-q2').textContent=q2||'—';
+  document.getElementById('s-q2-delta').textContent=fmtDelta(weekDelta);
   document.getElementById('s-video').textContent=totalVideo||'—';
   document.getElementById('s-video-pct').textContent=total?Math.round(totalVideo/total*100)+'% от всех':'';
-  document.getElementById('s-divs').textContent=Object.keys(divs).length;
 
   const container=document.getElementById('div-charts');
   container.innerHTML=DN.filter(d=>divs[d]).map((div,i)=>{
@@ -455,16 +486,19 @@ function renderDiv(){
       TYPE_ORDER.forEach(t=>{if(vals[t]>0){labels.push(t);data.push(vals[t]);colors.push(TC[t]);sum+=vals[t];}});
       const noType=(vals['Всего']||0)-sum;
       if(noType>0){labels.push('Без типа');data.push(noType);colors.push(TC['Без типа']);}
-      makeDonut(i,labels,data,colors,vals['Всего']||0);
+      const divDelta=prevDivs?((vals['Всего']||0)-((prevDivs[div]||{})['Всего']||0)):null;
+      makeDonut(i,labels,data,colors,vals['Всего']||0,divDelta);
     });
   },80);
 }
 
 // ── RENDER TAB 2 ──────────────────────────────────────────────────────────────
 function renderType(){
-  const{divs,total,totalVideo}=DATA;
+  const{divs,types,total,totalVideo,prevTotal,prevTypes}=DATA;
   const konc=Object.values(divs).reduce((s,v)=>s+(v['Концепт']||0),0);
+  const weekDelta=prevTotal!==null?total-prevTotal:null;
   document.getElementById('t-total').textContent=total||'—';
+  document.getElementById('t-total-delta').textContent=fmtDelta(weekDelta);
   document.getElementById('t-konc').textContent=konc;
   document.getElementById('t-konc-pct').textContent=total?'('+(konc/total*100).toFixed(1)+'%)':'';
   document.getElementById('t-video').textContent=totalVideo||'—';
@@ -491,7 +525,9 @@ function renderType(){
         const dm=typeByDiv[t];
         const labels=[],data=[],colors=[];
         DN.forEach(d=>{if(dm[d]){labels.push(d);data.push(dm[d]);colors.push(dc(d));}});
-        makeDonut(offset+(containerId.includes('top')?j:2+j),labels,data,colors,data.reduce((a,b)=>a+b,0));
+        const tot=data.reduce((a,b)=>a+b,0);
+        const typeDelta=prevTypes?(tot-(prevTypes[t]||0)):null;
+        makeDonut(offset+(containerId.includes('top')?j:2+j),labels,data,colors,tot,typeDelta);
       });
     },80);
   }
