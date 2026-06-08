@@ -54,13 +54,14 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .chart-card.no-click{cursor:default}
 .chart-card.no-click:hover{transform:none;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .chart-card-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#00a8cc;margin-bottom:8px;text-align:center;width:100%}
-/* Horizontal legend row */
-.card-leg-row{display:flex;flex-wrap:wrap;gap:4px 10px;margin-bottom:10px;justify-content:center;width:100%}
-.leg-item{display:flex;align-items:center;gap:3px;white-space:nowrap}
-.leg-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
-.leg-iname{font-size:10px;color:#555}
-.leg-inum{font-size:11px;font-weight:700;color:#1a2a4a}
-.chart-wrap{position:relative;width:130px;height:130px}
+/* Two-column: legend list left, donut right */
+.card-inner{display:flex;align-items:center;gap:10px;width:100%}
+.card-leg-col{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.leg-row2{display:flex;align-items:center;gap:6px}
+.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.leg-name2{flex:1;font-size:11px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leg-num{font-size:12px;font-weight:700;color:#1a2a4a;text-align:right;white-space:nowrap;flex-shrink:0}
+.chart-wrap{position:relative;width:120px;height:120px;flex-shrink:0}
 
 /* ── MODAL ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
@@ -434,19 +435,21 @@ function makeDonut(idx, labels, data, colors, total, delta){
   });
 }
 
-// ── CARD HTML — title / horizontal legend / donut ─────────────────────────────
+// ── CARD HTML — legend list left / donut right ───────────────────────────────
 function cardHTML(idx, title, labels, data, colors, total, clickable){
-  const legs=labels.map((l,i)=>`<div class="leg-item">
+  const legs=labels.map((l,i)=>`<div class="leg-row2">
     <div class="leg-dot" style="background:${colors[i]}"></div>
-    <span class="leg-iname">${l}</span>
-    <span class="leg-inum">${data[i]}</span>
+    <span class="leg-name2">${l}</span>
+    <span class="leg-num">${data[i]}</span>
   </div>`).join('');
   const cls=clickable?'chart-card':'chart-card no-click';
   const oc=clickable?`onclick="openDiv('${title}')"`:'';
   return`<div class="${cls}" ${oc}>
     <div class="chart-card-title">${title}</div>
-    <div class="card-leg-row">${legs}</div>
-    <div class="chart-wrap"><canvas id="ch_${idx}" width="130" height="130"></canvas></div>
+    <div class="card-inner">
+      <div class="card-leg-col">${legs}</div>
+      <div class="chart-wrap"><canvas id="ch_${idx}" width="120" height="120"></canvas></div>
+    </div>
   </div>`;
 }
 
