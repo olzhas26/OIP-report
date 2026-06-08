@@ -12,7 +12,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 
 /* ── TOPBAR ── */
 .topbar{background:#1a2a4a;color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200}
-.topbar-logo{font-size:15px;font-weight:800;letter-spacing:.5px;color:#fff}
+.topbar-logo{font-size:15px;font-weight:800;letter-spacing:.5px}
 .topbar-logo span{color:#00c2e0}
 .tab-group{display:flex;gap:2px}
 .tab{padding:6px 18px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border-radius:6px;transition:all .15s;letter-spacing:.3px;white-space:nowrap}
@@ -33,40 +33,49 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .page-title{font-size:18px;font-weight:800;color:#1a2a4a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:18px}
 .page-title span{color:#00a8cc}
 
-/* ── LAYOUT ── */
-.report-body{display:grid;grid-template-columns:165px 1fr;gap:20px}
-.stats-panel{display:flex;flex-direction:column;gap:20px;padding-right:18px;border-right:1px solid #dde8f4}
+/* ── MAIN LAYOUT ── */
+.report-body{display:grid;grid-template-columns:155px 1fr;gap:20px}
+.stats-panel{display:flex;flex-direction:column;gap:20px;padding-right:16px;border-right:1px solid #dde8f4}
 .stat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#00a8cc;line-height:1.5;margin-bottom:3px}
-.stat-val{font-size:40px;font-weight:900;color:#1a2a4a;line-height:1}
+.stat-val{font-size:38px;font-weight:900;color:#1a2a4a;line-height:1}
 .stat-sub{font-size:12px;color:#00a8cc;font-weight:700;margin-top:2px}
 .stat-hint{font-size:11px;color:#bbb;margin-top:2px}
 
 /* ── CHARTS GRID ── */
-.charts-grid{display:grid;gap:12px}
+.charts-grid{display:grid;gap:10px}
 .g3{grid-template-columns:repeat(3,1fr)}
 .g2{grid-template-columns:repeat(2,1fr)}
-.g3b{grid-template-columns:repeat(3,1fr);margin-top:12px}
+.g3b{grid-template-columns:repeat(3,1fr);margin-top:10px}
 
-/* ── CHART CARD ── */
-.chart-card{background:#fff;border-radius:14px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s,box-shadow .15s}
+/* ── COMPACT CHART CARD (div tab) ── */
+.chart-card{background:#fff;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s,box-shadow .15s}
 .chart-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.10)}
 .chart-card.no-click{cursor:default}
 .chart-card.no-click:hover{transform:none;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.chart-card-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#00a8cc;margin-bottom:10px;text-align:center}
-.chart-wrap{position:relative;width:155px;height:155px}
+.chart-card-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#00a8cc;margin-bottom:8px;text-align:center;width:100%}
+/* Horizontal inner layout for div cards */
+.card-inner{display:flex;align-items:center;gap:8px;width:100%}
+.card-leg-col{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0}
+.card-num-col{display:flex;flex-direction:column;gap:5px;align-items:flex-end;min-width:20px}
+.chart-wrap{position:relative;width:120px;height:120px;flex-shrink:0}
+.chart-wrap-lg{position:relative;width:150px;height:150px;flex-shrink:0}
+.leg-row2{display:flex;align-items:center;gap:5px}
+.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.leg-name2{font-size:11px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leg-num{font-size:12px;font-weight:700;color:#1a2a4a;line-height:1.6;white-space:nowrap}
+/* Old-style legend for type tab */
 .legend{margin-top:10px;width:100%;display:flex;flex-direction:column;gap:4px}
 .leg-row{display:flex;align-items:center;gap:5px}
-.leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 .leg-name{font-size:11px;color:#666;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .leg-cnt{font-size:11px;font-weight:700;color:#1a2a4a}
 
 /* ── MODAL ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:#fff;border-radius:18px;width:660px;max-width:95vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal{background:#fff;border-radius:18px;width:680px;max-width:95vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .modal-head{background:#1a2a4a;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .modal-head h2{font-size:18px;font-weight:800;letter-spacing:.3px}
-.modal-head .close-btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center}
+.modal-head .close-btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
 .modal-body{padding:20px 24px;overflow-y:auto;flex:1}
 .modal-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:18px}
 .mstat{background:#f0f3f8;border-radius:10px;padding:10px;text-align:center}
@@ -78,22 +87,54 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .modal-table td{padding:8px 10px;border-bottom:1px solid #f4f6fa;color:#333;vertical-align:top}
 .modal-table tr:hover td{background:#f8fafd}
 .badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
-.b-k{background:#e3f2fd;color:#1565c0}
-.b-p{background:#fff8e1;color:#f57f17}
-.b-v{background:#fce4ec;color:#b71c1c}
-.b-pl{background:#e8f5e9;color:#2e7d32}
-.b-e{background:#f3e5f5;color:#6a1b9a}
-.b-x{background:#f5f5f5;color:#666}
+.b-k{background:#e3f2fd;color:#1565c0}.b-p{background:#fff8e1;color:#f57f17}
+.b-v{background:#fce4ec;color:#b71c1c}.b-pl{background:#e8f5e9;color:#2e7d32}
+.b-e{background:#f3e5f5;color:#6a1b9a}.b-x{background:#f5f5f5;color:#666}
 
 /* ── WEEKLY TAB ── */
-.weekly-grid{display:grid;grid-template-columns:280px 1fr 1fr;gap:16px;align-items:start}
-.weekly-donuts{display:flex;flex-direction:column;gap:12px}
-.bar-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.bar-card-title{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#1a2a4a;margin-bottom:14px;background:#1a2a4a;color:#fff;padding:6px 12px;border-radius:6px;text-align:center}
-.bar-legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;font-size:11px}
-.bar-legend span{display:flex;align-items:center;gap:4px;color:#666}
-.bar-legend i{display:inline-block;width:12px;height:12px;border-radius:2px}
-.bar-wrap{position:relative;height:200px}
+.weekly-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.weekly-header .page-title{margin-bottom:0}
+.snap-btn{padding:8px 20px;background:#1a2a4a;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:background .15s;white-space:nowrap}
+.snap-btn:hover{background:#00a8cc}
+.snap-info{min-height:30px;margin-bottom:14px}
+.snap-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;background:#e0f7fa;color:#006064}
+.snap-none{background:#fff8e1;color:#b45309}
+
+.weekly-main-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px;align-items:start}
+
+/* Delta cards */
+.delta-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+.delta-header{background:#1a2a4a;color:rgba(255,255,255,.88);padding:10px 16px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.delta-row{display:flex;align-items:center;gap:8px;padding:9px 16px;border-bottom:1px solid #f0f4fa}
+.delta-row:last-child{border-bottom:none}
+.delta-total-row{display:flex;align-items:center;gap:8px;padding:9px 16px;background:#f8fafd;border-top:2px solid #e0e8f4}
+.delta-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.delta-name{flex:1;font-size:12px;color:#444;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.delta-val{font-size:14px;font-weight:800;color:#1a2a4a;min-width:26px;text-align:right}
+.delta-badge{display:inline-block;min-width:34px;text-align:center;padding:2px 7px;border-radius:12px;font-size:11px;font-weight:700;margin-left:4px}
+.delta-up{background:#e8f5e9;color:#1b5e20}
+.delta-dn{background:#fce4ec;color:#b71c1c}
+.delta-zero{background:#f5f5f5;color:#999}
+
+/* Load gauge card */
+.load-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+.load-gauge-wrap{padding:16px 20px 10px}
+.load-pct{font-size:52px;font-weight:900;line-height:1;letter-spacing:-1px}
+.load-label{font-size:13px;font-weight:700;margin-bottom:14px;margin-top:2px}
+.gauge-track{height:10px;background:#f0f3f8;border-radius:5px;overflow:hidden;margin-bottom:6px}
+.gauge-fill{height:100%;border-radius:5px;transition:width .6s ease}
+.gauge-sub{font-size:11px;color:#aaa;margin-bottom:4px}
+.load-breakdown{border-top:1px solid #f0f4fa;padding:4px 0}
+.load-row{display:flex;align-items:baseline;gap:8px;padding:6px 20px;border-bottom:1px solid #f8fafd}
+.load-row:last-child{border-bottom:none}
+.load-task{flex:1;font-size:11px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.load-detail{font-size:10px;color:#bbb;white-space:nowrap}
+.load-pd{font-size:12px;font-weight:700;color:#1a2a4a;min-width:42px;text-align:right;white-space:nowrap}
+.load-empty{text-align:center;padding:12px;color:#bbb;font-size:12px}
+.load-two-col{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.load-half{padding:14px 16px 8px}
+.load-half-next{border-left:1px solid #f0f4fa;background:#fafbfd}
+.load-half-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#aaa;margin-bottom:6px}
 
 /* ── WORK TAB ── */
 .filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
@@ -114,11 +155,11 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .sp-done{background:#e8f5e9;color:#1b5e20}
 .no-data{text-align:center;padding:40px;color:#aaa;font-size:13px}
 
-@media(max-width:900px){
+@media(max-width:960px){
   .report-body{grid-template-columns:1fr}
-  .stats-panel{border-right:none;border-bottom:1px solid #dde8f4;padding-bottom:16px;flex-direction:row;flex-wrap:wrap;gap:14px}
+  .stats-panel{border-right:none;border-bottom:1px solid #dde8f4;padding-bottom:14px;flex-direction:row;flex-wrap:wrap;gap:14px}
   .g3,.g2,.g3b{grid-template-columns:1fr 1fr}
-  .weekly-grid{grid-template-columns:1fr}
+  .weekly-main-grid{grid-template-columns:1fr}
   .modal-stats{grid-template-columns:repeat(3,1fr)}
 }
 </style>
@@ -142,27 +183,27 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 </div>
 <div id="err-msg" style="display:none" class="loading"><div class="err" id="err-txt"></div></div>
 
-<!-- ────────── TAB 1: По дивизионам ────────── -->
+<!-- ──────────── TAB 1: По дивизионам ──────────── -->
 <div id="tab-div" class="page">
   <div class="page-title">Отдел инициации проектов <span>2026</span></div>
   <div class="report-body">
     <div class="stats-panel">
       <div><div class="stat-lbl">Общее кол-во<br>запросов</div><div class="stat-val" id="s-total">—</div></div>
-      <div><div class="stat-lbl">С видео</div><div class="stat-val" id="s-video" style="font-size:34px">—</div><div class="stat-hint" id="s-video-pct"></div></div>
-      <div><div class="stat-lbl">Дивизионов</div><div class="stat-val" id="s-divs" style="font-size:34px">—</div></div>
+      <div><div class="stat-lbl">С видео</div><div class="stat-val" id="s-video" style="font-size:32px">—</div><div class="stat-hint" id="s-video-pct"></div></div>
+      <div><div class="stat-lbl">Дивизионов</div><div class="stat-val" id="s-divs" style="font-size:32px">—</div></div>
     </div>
     <div class="charts-grid g3" id="div-charts"></div>
   </div>
 </div>
 
-<!-- ────────── TAB 2: По типам ────────── -->
+<!-- ──────────── TAB 2: По типам ──────────── -->
 <div id="tab-type" class="page">
   <div class="page-title">Отдел инициации проектов <span>2026</span></div>
   <div class="report-body">
     <div class="stats-panel">
       <div><div class="stat-lbl">Общее кол-во<br>запросов</div><div class="stat-val" id="t-total">—</div></div>
-      <div><div class="stat-lbl">Процент<br>концептов</div><div class="stat-val" id="t-konc" style="font-size:34px">—</div><div class="stat-sub" id="t-konc-pct"></div></div>
-      <div><div class="stat-lbl">Видео для<br>концептов</div><div class="stat-val" id="t-video" style="font-size:34px">—</div><div class="stat-sub" id="t-video-pct"></div></div>
+      <div><div class="stat-lbl">Процент<br>концептов</div><div class="stat-val" id="t-konc" style="font-size:32px">—</div><div class="stat-sub" id="t-konc-pct"></div></div>
+      <div><div class="stat-lbl">Видео для<br>концептов</div><div class="stat-val" id="t-video" style="font-size:32px">—</div><div class="stat-sub" id="t-video-pct"></div></div>
     </div>
     <div>
       <div class="charts-grid g2" id="type-charts-top"></div>
@@ -171,34 +212,27 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
   </div>
 </div>
 
-<!-- ────────── TAB 3: Недельный отчёт ────────── -->
+<!-- ──────────── TAB 3: Недельный отчёт ──────────── -->
 <div id="tab-weekly" class="page">
-  <div class="page-title">Недельный отчёт <span>Q2 2026</span> · <span style="color:#888;font-size:14px;font-weight:400;text-transform:none">от 25.05.26</span></div>
-  <div class="weekly-grid">
-    <div class="weekly-donuts" id="weekly-donuts"></div>
-    <div class="bar-card">
-      <div class="bar-card-title">ФАКТ Q2</div>
-      <div class="bar-legend">
-        <span><i style="background:#f0a030"></i>2026 Q1</span>
-        <span><i style="background:#4caf50"></i>2026 Q2</span>
-        <span><i style="background:#3d6ab0"></i>2025</span>
-        <span><i style="background:#e8d5b5"></i>2026 план</span>
-      </div>
-      <div class="bar-wrap"><canvas id="bar-fact"></canvas></div>
+  <div class="weekly-header">
+    <div class="page-title" style="margin-bottom:0">Недельный отчёт <span>2026</span></div>
+    <button class="snap-btn" onclick="saveWeeklySnapshot()">📌 Зафиксировать неделю</button>
+  </div>
+  <div id="weekly-snap-info" class="snap-info"></div>
+  <div class="weekly-main-grid">
+    <div class="load-card" id="load-card"></div>
+    <div class="delta-card">
+      <div class="delta-header">По дивизионам</div>
+      <div id="div-delta"></div>
     </div>
-    <div class="bar-card">
-      <div class="bar-card-title">ПРОГНОЗ Q2</div>
-      <div class="bar-legend">
-        <span><i style="background:#f0a030"></i>2026 Q1</span>
-        <span><i style="background:#3d6ab0"></i>2025</span>
-        <span><i style="background:#e8d5b5"></i>2026 план</span>
-      </div>
-      <div class="bar-wrap"><canvas id="bar-plan"></canvas></div>
+    <div class="delta-card">
+      <div class="delta-header">По типам</div>
+      <div id="type-delta"></div>
     </div>
   </div>
 </div>
 
-<!-- ────────── TAB 4: Проекты в работе ────────── -->
+<!-- ──────────── TAB 4: Проекты в работе ──────────── -->
 <div id="tab-work" class="page">
   <div class="page-title">Проекты <span>в работе</span></div>
   <div class="filter-bar">
@@ -213,6 +247,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
         <th style="width:36px">№</th>
         <th>Наименование</th>
         <th>Дивизион</th>
+        <th>Задача</th>
         <th>Ответственные</th>
         <th>Срок</th>
         <th>Статус</th>
@@ -222,7 +257,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
   </div>
 </div>
 
-<!-- ────────── MODAL ────────── -->
+<!-- ──────────── MODAL ──────────── -->
 <div class="overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-head">
@@ -241,495 +276,568 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
-const SHEET_ID  = '1zwNjuojBXjJ3ZwwyyORgGdCPW5afsypIF0gk1A8qphY';
-const BASE_URL  = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=';
-const URL_KPI   = BASE_URL + encodeURIComponent('Отчет KPI');
-const URL_SUM   = BASE_URL + encodeURIComponent('Сводка типов');
-const URL_WORK  = BASE_URL + encodeURIComponent('Проекты в работе');
+const SHEET_ID = '1zwNjuojBXjJ3ZwwyyORgGdCPW5afsypIF0gk1A8qphY';
+const BASE_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=';
+const URL_KPI  = BASE_URL + encodeURIComponent('Отчет KPI');
+const URL_SUM  = BASE_URL + encodeURIComponent('Сводка типов');
+const URL_WORK = BASE_URL + encodeURIComponent('Проекты в работе');
+
+// ── TASK WEIGHTS (person-days per task unit) ─────────────────────────────────
+// Order matters — more specific patterns first
+const TASK_WEIGHTS = [
+  {keys:['разработка концепта','концепт'],            label:'Концепт',           weight:10},
+  {keys:['разработка фасада','фасад'],                label:'Разработка фасада', weight:3.5},
+  {keys:['разработка планировок','планировк'],        label:'Планировки',        weight:3.5},
+  {keys:['3d посадка','3d-посадка','3d'],             label:'3D посадка',        weight:1.25},
+  {keys:['разработка видео','видео'],                 label:'Видео',             weight:1},
+  {keys:['визуализация'],                             label:'Визуализация',      weight:2},
+  {keys:['посадка'],                                  label:'Посадка',           weight:0.5},
+];
+const DEPT_CAPACITY = 50; // 10 чел × 5 дней
+const SNAPSHOT_KEY  = 'oip_weekly_snapshot';
 
 // ── COLORS ──────────────────────────────────────────────────────────────────
 const TC = {Концепт:'#1e3a6b',Посадка:'#f0a030',Визуализация:'#f5d8a8',Планировки:'#9ab8cc',ЭП:'#c8dff0','Без типа':'#e8e8e8'};
 const TYPE_ORDER = ['Концепт','Посадка','Визуализация','ЭП','Планировки'];
-const DC = ['#1e3a6b','#4a80c0','#f0a030','#f5d8a8','#9ab8cc','#c8dff0','#d0d8e8'];
-const DN = ['Центр','Алматы','Юг','Запад','РДС','Ташкент','Другое'];
+// Division colors — 6 after merge
+const DC = ['#1e3a6b','#4a80c0','#f0a030','#f5d8a8','#9ab8cc','#d0d8e8'];
+const DN = ['Центр','Алматы','Юг','Запад','РДС','Ташкент / Другое'];
+// Map old names → merged name
+const DN_MAP = {'Ташкент':'Ташкент / Другое','Другое':'Ташкент / Другое'};
+
 function dc(n){const i=DN.indexOf(n);return i>=0?DC[i]:'#ccc';}
 function bc(t){return{Концепт:'b-k',Посадка:'b-p',Визуализация:'b-v',Планировки:'b-pl',Эскиз:'b-e'}[t]||'b-x';}
 
 // ── STATE ────────────────────────────────────────────────────────────────────
-let DATA = {divs:{}, types:{}, projects:[], workProjects:[]};
+let DATA = {divs:{}, types:{}, projects:[], workProjects:[], total:0, totalVideo:0};
 let workFilter = 'в работе';
 const charts = {};
 
 // ── CSV PARSER ───────────────────────────────────────────────────────────────
-function parseCSV(text) {
-  const rows = [];
-  let cur = '', inQ = false;
-  const cells = [];
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (c === '"') { inQ = !inQ; continue; }
-    if (c === ',' && !inQ) { cells.push(cur.trim()); cur = ''; continue; }
-    if ((c === '\n' || c === '\r') && !inQ) {
-      cells.push(cur.trim()); cur = '';
-      if (cells.some(x=>x)) rows.push([...cells]);
-      cells.length = 0;
-      if (c === '\r' && text[i+1] === '\n') i++;
+function parseCSV(text){
+  const rows=[]; let cur='',inQ=false; const cells=[];
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(c==='"'){inQ=!inQ;continue;}
+    if(c===','&&!inQ){cells.push(cur.trim());cur='';continue;}
+    if((c==='\n'||c==='\r')&&!inQ){
+      cells.push(cur.trim());cur='';
+      if(cells.some(x=>x))rows.push([...cells]);
+      cells.length=0;
+      if(c==='\r'&&text[i+1]==='\n')i++;
       continue;
     }
-    cur += c;
+    cur+=c;
   }
-  if (cur || cells.length) { cells.push(cur.trim()); if(cells.some(x=>x)) rows.push(cells); }
+  if(cur||cells.length){cells.push(cur.trim());if(cells.some(x=>x))rows.push(cells);}
   return rows;
 }
 
-// ── PARSE SUMMARY ────────────────────────────────────────────────────────────
-function parseSummary(rows) {
-  // Find header row: Дивизион, Концепт, Посадка, Визуализация, Планировки, ЭП, Видео, Всего
-  let headerIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    if (rows[i].some(c => c === 'Дивизион' || c === 'Концепт')) { headerIdx = i; break; }
-  }
-  if (headerIdx < 0) return {};
-  const hdr = rows[headerIdx];
-  const result = {};
-  for (let i = headerIdx + 1; i < rows.length; i++) {
-    const r = rows[i];
-    const name = r[0];
-    if (!name || name === 'ИТОГО') continue;
-    result[name] = {};
-    hdr.forEach((h,j) => { if(h && j>0) result[name][h] = parseInt(r[j])||0; });
+// ── PARSE SHEETS ─────────────────────────────────────────────────────────────
+function parseSummary(rows){
+  let hi=-1;
+  for(let i=0;i<rows.length;i++){if(rows[i].some(c=>c==='Дивизион'||c==='Концепт')){hi=i;break;}}
+  if(hi<0)return{};
+  const hdr=rows[hi]; const result={};
+  for(let i=hi+1;i<rows.length;i++){
+    const r=rows[i]; const name=r[0];
+    if(!name||name==='ИТОГО')continue;
+    result[name]={};
+    hdr.forEach((h,j)=>{if(h&&j>0)result[name][h]=parseInt(r[j])||0;});
   }
   return result;
 }
 
-// ── PARSE KPI SHEET ──────────────────────────────────────────────────────────
-function parseKPI(rows) {
-  const projects = [];
-  let headerIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    if (rows[i].some(c => c === '№ п/п' || c === 'Наименование')) { headerIdx = i; break; }
-  }
-  if (headerIdx < 0) return projects;
-  for (let i = headerIdx + 1; i < rows.length; i++) {
-    const r = rows[i];
-    if (!r[0] || isNaN(parseInt(r[0]))) continue;
-    let type = r[3]||'';
-    if (type.toLowerCase().startsWith('эскиз')) type = 'Эскиз';
-    projects.push({
-      num: parseInt(r[0]), name: r[1]||'', division: r[2]||'',
-      type, video: r[4]==='Да', deadline: r[5]||'',
-      persons: [r[7],r[8],r[9]].filter(Boolean).join(', '),
-      status: r[10]||''
-    });
+function parseKPI(rows){
+  const projects=[]; let hi=-1;
+  for(let i=0;i<rows.length;i++){if(rows[i].some(c=>c==='№ п/п'||c==='Наименование')){hi=i;break;}}
+  if(hi<0)return projects;
+  for(let i=hi+1;i<rows.length;i++){
+    const r=rows[i];
+    if(!r[0]||isNaN(parseInt(r[0])))continue;
+    let type=r[3]||'';
+    if(type.toLowerCase().startsWith('эскиз'))type='Эскиз';
+    projects.push({num:parseInt(r[0]),name:r[1]||'',division:r[2]||'',type,video:r[4]==='Да',
+      deadline:r[5]||'',persons:[r[7],r[8],r[9]].filter(Boolean).join(', '),status:r[10]||''});
   }
   return projects;
 }
 
-// ── PARSE WORK SHEET ─────────────────────────────────────────────────────────
-function parseWork(rows) {
-  const work = [];
-  let headerIdx = -1;
-  for (let i = 0; i < rows.length; i++) {
-    if (rows[i].some(c => c === 'Наименование' || c === '№ п/п')) { headerIdx = i; break; }
-  }
-  if (headerIdx < 0) return work;
-  // Columns: №, Наименование, Дивизион, Контакт, Поступил, Срок, Задача, Ответ1, Ответ2, Ответ3, Статус
-  for (let i = headerIdx + 1; i < rows.length; i++) {
-    const r = rows[i];
-    if (!r[1] || !r[1].trim()) continue; // skip empty name rows
-    const num = parseInt(r[0]);
-    work.push({
-      num: isNaN(num) ? i - headerIdx : num,
-      name: r[1]||'', division: r[2]||'', contact: r[3]||'',
-      deadline: r[5]||'', task: r[6]||'',
-      persons: [r[7],r[8],r[9]].filter(Boolean).join(', '),
-      status: r[10]||''
-    });
+function parseWork(rows){
+  const work=[]; let hi=-1;
+  for(let i=0;i<rows.length;i++){if(rows[i].some(c=>c==='Наименование'||c==='№ п/п')){hi=i;break;}}
+  if(hi<0)return work;
+  for(let i=hi+1;i<rows.length;i++){
+    const r=rows[i];
+    if(!r[1]||!r[1].trim())continue;
+    const num=parseInt(r[0]);
+    work.push({num:isNaN(num)?i-hi:num,name:r[1]||'',division:r[2]||'',contact:r[3]||'',
+      deadline:r[5]||'',task:r[6]||'',persons:[r[7],r[8],r[9]].filter(Boolean).join(', '),status:r[10]||''});
   }
   return work;
 }
 
-// ── COMPUTE AGGREGATES ───────────────────────────────────────────────────────
-function buildFromSummary(divSummary) {
-  const divs = {}, types = {};
-  let total = 0, totalVideo = 0;
-  Object.entries(divSummary).forEach(([name, vals]) => {
-    if (!DN.includes(name)) return;
-    divs[name] = vals;
-    total += vals['Всего']||0;
-    totalVideo += vals['Видео']||0;
-    TYPE_ORDER.forEach(t => {
-      types[t] = (types[t]||0) + (vals[t]||0);
-    });
+// ── AGGREGATES (with Ташкент+Другое → Ташкент / Другое) ─────────────────────
+function buildFromSummary(divSummary){
+  const divs={}, types={}; let total=0, totalVideo=0;
+  Object.entries(divSummary).forEach(([name,vals])=>{
+    const mapped=DN_MAP[name]||name;
+    if(!DN.includes(mapped))return;
+    if(!divs[mapped])divs[mapped]={};
+    Object.entries(vals).forEach(([k,v])=>{divs[mapped][k]=(divs[mapped][k]||0)+v;});
+    total+=vals['Всего']||0;
+    totalVideo+=vals['Видео']||0;
+    TYPE_ORDER.forEach(t=>{types[t]=(types[t]||0)+(vals[t]||0);});
   });
-  return { divs, types, total, totalVideo };
+  return{divs,types,total,totalVideo};
 }
 
 // ── DONUT FACTORY ─────────────────────────────────────────────────────────────
-function makeDonut(idx, labels, data, colors, total) {
-  const id = 'ch_' + idx;
-  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
-  const el = document.getElementById(id);
-  if (!el) return;
-  charts[id] = new Chart(el.getContext('2d'), {
-    type: 'doughnut',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 3, borderColor: '#fff' }] },
-    options: {
-      responsive: false, cutout: '67%',
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.label + ': ' + c.raw } } }
-    },
-    plugins: [{
-      id: 'ct_' + idx,
-      afterDraw(chart) {
-        const {ctx, chartArea:{width,height,left,top}} = chart;
+function makeDonut(idx, labels, data, colors, total){
+  const id='ch_'+idx;
+  if(charts[id]){charts[id].destroy();delete charts[id];}
+  const el=document.getElementById(id);
+  if(!el)return;
+  const sz=parseInt(el.getAttribute('width'))||120;
+  charts[id]=new Chart(el.getContext('2d'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:3,borderColor:'#fff'}]},
+    options:{responsive:false,cutout:'67%',
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.raw}}}},
+    plugins:[{
+      id:'ct_'+idx,
+      afterDraw(chart){
+        const{ctx,chartArea:{width,height,left,top}}=chart;
         ctx.save();
-        ctx.font = 'bold 28px Segoe UI,Arial,sans-serif';
-        ctx.fillStyle = '#1a2a4a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(String(total), left+width/2, top+height/2);
+        ctx.font=`bold ${sz<=130?20:26}px Segoe UI,Arial,sans-serif`;
+        ctx.fillStyle='#1a2a4a';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(String(total),left+width/2,top+height/2);
         ctx.restore();
       }
     }]
   });
 }
 
-// ── CARD HTML ─────────────────────────────────────────────────────────────────
-function cardHTML(idx, title, labels, data, colors, total, clickable) {
-  const legs = labels.map((l,i) =>
-    `<div class="leg-row"><div class="leg-dot" style="background:${colors[i]}"></div><div class="leg-name" title="${l}">${l}</div><div class="leg-cnt">${data[i]}</div></div>`
-  ).join('');
-  const cls = clickable ? 'chart-card' : 'chart-card no-click';
-  const onclick = clickable ? `onclick="openDiv('${title}')"` : '';
-  return `<div class="${cls}" ${onclick}>
+// ── COMPACT CARD HTML (div tab) ───────────────────────────────────────────────
+function cardHTML(idx, title, labels, data, colors, total, clickable){
+  const legL=labels.map((l,i)=>`<div class="leg-row2"><div class="leg-dot" style="background:${colors[i]}"></div><span class="leg-name2" title="${l}">${l}</span></div>`).join('');
+  const legR=data.map(v=>`<div class="leg-num">${v}</div>`).join('');
+  const cls=clickable?'chart-card':'chart-card no-click';
+  const oc=clickable?`onclick="openDiv('${title}')"`:'';
+  return`<div class="${cls}" ${oc}>
     <div class="chart-card-title">${title}</div>
-    <div class="chart-wrap"><canvas id="ch_${idx}" width="155" height="155"></canvas></div>
+    <div class="card-inner">
+      <div class="card-leg-col">${legL}</div>
+      <div class="chart-wrap"><canvas id="ch_${idx}" width="120" height="120"></canvas></div>
+      <div class="card-num-col">${legR}</div>
+    </div>
+  </div>`;
+}
+
+// ── TYPE CARD HTML (vertical, type tab) ───────────────────────────────────────
+function typeCardHTML(idx, title, labels, data, colors, total){
+  const legs=labels.map((l,i)=>`<div class="leg-row"><div class="leg-dot" style="background:${colors[i]}"></div><div class="leg-name" title="${l}">${l}</div><div class="leg-cnt">${data[i]}</div></div>`).join('');
+  return`<div class="chart-card no-click">
+    <div class="chart-card-title">${title}</div>
+    <div class="chart-wrap-lg"><canvas id="ch_${idx}" width="150" height="150"></canvas></div>
     <div class="legend">${legs}</div>
   </div>`;
 }
 
 // ── RENDER TAB 1 ──────────────────────────────────────────────────────────────
-function renderDiv() {
-  const { divs, total, totalVideo } = DATA;
-  document.getElementById('s-total').textContent = total||'—';
-  document.getElementById('s-video').textContent = totalVideo||'—';
-  document.getElementById('s-video-pct').textContent = total ? Math.round(totalVideo/total*100)+'% от всех' : '';
-  document.getElementById('s-divs').textContent = Object.keys(divs).length;
+function renderDiv(){
+  const{divs,total,totalVideo}=DATA;
+  document.getElementById('s-total').textContent=total||'—';
+  document.getElementById('s-video').textContent=totalVideo||'—';
+  document.getElementById('s-video-pct').textContent=total?Math.round(totalVideo/total*100)+'% от всех':'';
+  document.getElementById('s-divs').textContent=Object.keys(divs).length;
 
-  const container = document.getElementById('div-charts');
-  container.innerHTML = DN.filter(d=>divs[d]).map((div,i) => {
-    const vals = divs[div];
-    const labels=[], data=[], colors=[];
-    let sum = 0;
-    TYPE_ORDER.forEach(t => { if(vals[t]>0){labels.push(t);data.push(vals[t]);colors.push(TC[t]);sum+=vals[t];} });
-    const noType = (vals['Всего']||0) - sum;
+  const container=document.getElementById('div-charts');
+  container.innerHTML=DN.filter(d=>divs[d]).map((div,i)=>{
+    const vals=divs[div];
+    const labels=[],data=[],colors=[]; let sum=0;
+    TYPE_ORDER.forEach(t=>{if(vals[t]>0){labels.push(t);data.push(vals[t]);colors.push(TC[t]);sum+=vals[t];}});
+    const noType=(vals['Всего']||0)-sum;
     if(noType>0){labels.push('Без типа');data.push(noType);colors.push(TC['Без типа']);}
-    return cardHTML(i, div, labels, data, colors, vals['Всего']||0, true);
+    return cardHTML(i,div,labels,data,colors,vals['Всего']||0,true);
   }).join('');
 
-  setTimeout(() => {
-    DN.filter(d=>divs[d]).forEach((div,i) => {
-      const vals = divs[div];
-      const labels=[], data=[], colors=[];
-      let sum=0;
+  setTimeout(()=>{
+    DN.filter(d=>divs[d]).forEach((div,i)=>{
+      const vals=divs[div];
+      const labels=[],data=[],colors=[]; let sum=0;
       TYPE_ORDER.forEach(t=>{if(vals[t]>0){labels.push(t);data.push(vals[t]);colors.push(TC[t]);sum+=vals[t];}});
       const noType=(vals['Всего']||0)-sum;
       if(noType>0){labels.push('Без типа');data.push(noType);colors.push(TC['Без типа']);}
-      makeDonut(i, labels, data, colors, vals['Всего']||0);
+      makeDonut(i,labels,data,colors,vals['Всего']||0);
     });
-  }, 80);
+  },80);
 }
 
 // ── RENDER TAB 2 ──────────────────────────────────────────────────────────────
-function renderType() {
-  const { divs, total, totalVideo } = DATA;
-  const konc = Object.values(divs).reduce((s,v)=>s+(v['Концепт']||0),0);
-  document.getElementById('t-total').textContent = total||'—';
-  document.getElementById('t-konc').textContent = konc;
-  document.getElementById('t-konc-pct').textContent = total?'('+( konc/total*100).toFixed(1)+'%)':'';
-  document.getElementById('t-video').textContent = totalVideo||'—';
-  document.getElementById('t-video-pct').textContent = konc?'('+( totalVideo/konc*100).toFixed(1)+'%)':'';
+function renderType(){
+  const{divs,total,totalVideo}=DATA;
+  const konc=Object.values(divs).reduce((s,v)=>s+(v['Концепт']||0),0);
+  document.getElementById('t-total').textContent=total||'—';
+  document.getElementById('t-konc').textContent=konc;
+  document.getElementById('t-konc-pct').textContent=total?'('+(konc/total*100).toFixed(1)+'%)':'';
+  document.getElementById('t-video').textContent=totalVideo||'—';
+  document.getElementById('t-video-pct').textContent=konc?'('+(totalVideo/konc*100).toFixed(1)+'%)':'';
 
-  // Build type→div breakdown
-  const offset = 20;
-  const typeByDiv = {};
-  TYPE_ORDER.forEach(t => {
-    typeByDiv[t] = {};
-    DN.forEach(d => { if(divs[d]&&divs[d][t]) typeByDiv[t][d]=divs[d][t]; });
+  const offset=20;
+  const typeByDiv={};
+  TYPE_ORDER.forEach(t=>{
+    typeByDiv[t]={};
+    DN.forEach(d=>{if(divs[d]&&divs[d][t])typeByDiv[t][d]=divs[d][t];});
   });
 
-  function makeTypeCards(types, containerId) {
-    document.getElementById(containerId).innerHTML = types.map((t,j) => {
-      const dc_map = typeByDiv[t];
-      const labels=[], data=[], colors=[];
-      DN.forEach(d => { if(dc_map[d]){labels.push(d);data.push(dc_map[d]);colors.push(dc(d));} });
-      const tot = data.reduce((a,b)=>a+b,0);
-      const idx = offset + (containerId.includes('top') ? j : 2+j);
-      return cardHTML(idx, t, labels, data, colors, tot, false);
+  function makeTypeCards(types,containerId){
+    document.getElementById(containerId).innerHTML=types.map((t,j)=>{
+      const dm=typeByDiv[t];
+      const labels=[],data=[],colors=[];
+      DN.forEach(d=>{if(dm[d]){labels.push(d);data.push(dm[d]);colors.push(dc(d));}});
+      const tot=data.reduce((a,b)=>a+b,0);
+      const idx=offset+(containerId.includes('top')?j:2+j);
+      return typeCardHTML(idx,t,labels,data,colors,tot);
     }).join('');
-    setTimeout(() => {
-      types.forEach((t,j) => {
-        const dc_map = typeByDiv[t];
-        const labels=[], data=[], colors=[];
-        DN.forEach(d => { if(dc_map[d]){labels.push(d);data.push(dc_map[d]);colors.push(dc(d));} });
-        makeDonut(offset+(containerId.includes('top')?j:2+j), labels, data, colors, data.reduce((a,b)=>a+b,0));
+    setTimeout(()=>{
+      types.forEach((t,j)=>{
+        const dm=typeByDiv[t];
+        const labels=[],data=[],colors=[];
+        DN.forEach(d=>{if(dm[d]){labels.push(d);data.push(dm[d]);colors.push(dc(d));}});
+        makeDonut(offset+(containerId.includes('top')?j:2+j),labels,data,colors,data.reduce((a,b)=>a+b,0));
       });
-    }, 80);
+    },80);
   }
-  makeTypeCards(TYPE_ORDER.slice(0,2), 'type-charts-top');
-  makeTypeCards(TYPE_ORDER.slice(2), 'type-charts-bot');
+  makeTypeCards(TYPE_ORDER.slice(0,2),'type-charts-top');
+  makeTypeCards(TYPE_ORDER.slice(2),'type-charts-bot');
+}
+
+// ── LOAD CALCULATION ─────────────────────────────────────────────────────────
+function getTaskWeight(taskStr){
+  if(!taskStr)return 1;
+  const lower=taskStr.toLowerCase().trim();
+  for(const{keys,weight}of TASK_WEIGHTS){
+    if(keys.some(k=>lower.includes(k)))return weight;
+  }
+  return 1;
+}
+
+function getTaskLabel(taskStr){
+  if(!taskStr)return '—';
+  const lower=taskStr.toLowerCase().trim();
+  for(const{keys,label}of TASK_WEIGHTS){
+    if(keys.some(k=>lower.includes(k)))return label;
+  }
+  return taskStr;
+}
+
+function calcLoad(workProjects){
+  let curLoad=0, nextLoad=0;
+  const curBreakdown={}, nextBreakdown={};
+  workProjects.forEach(p=>{
+    const isWork=p.status==='в работе';
+    const isQueue=p.status==='в очереди';
+    if(!isWork&&!isQueue)return;
+    const w=getTaskWeight(p.task);
+    const key=p.task||'(без задачи)';
+    if(isWork){
+      curLoad+=w;
+      if(!curBreakdown[key])curBreakdown[key]={count:0,totalW:0};
+      curBreakdown[key].count++;
+      curBreakdown[key].totalW+=w;
+    } else {
+      nextLoad+=w;
+      if(!nextBreakdown[key])nextBreakdown[key]={count:0,totalW:0};
+      nextBreakdown[key].count++;
+      nextBreakdown[key].totalW+=w;
+    }
+  });
+  return{
+    curLoad, curPct:Math.round(curLoad/DEPT_CAPACITY*100), curBreakdown,
+    nextLoad, nextPct:Math.round(nextLoad/DEPT_CAPACITY*100), nextBreakdown
+  };
+}
+
+// ── SNAPSHOT FUNCTIONS ────────────────────────────────────────────────────────
+function getWeekKey(){
+  const now=new Date();
+  const onejan=new Date(now.getFullYear(),0,1);
+  const week=Math.ceil((((now-onejan)/86400000)+onejan.getDay()+1)/7);
+  return`${now.getFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+
+function saveWeeklySnapshot(){
+  const snapshot={
+    key:getWeekKey(),
+    date:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long'}),
+    divs:JSON.parse(JSON.stringify(DATA.divs)),
+    types:JSON.parse(JSON.stringify(DATA.types)),
+    total:DATA.total
+  };
+  const history=JSON.parse(localStorage.getItem(SNAPSHOT_KEY)||'[]');
+  const idx=history.findIndex(s=>s.key===snapshot.key);
+  if(idx>=0)history[idx]=snapshot; else history.push(snapshot);
+  if(history.length>12)history.shift();
+  localStorage.setItem(SNAPSHOT_KEY,JSON.stringify(history));
+  renderWeekly();
+}
+
+function getLastSnapshot(){
+  const history=JSON.parse(localStorage.getItem(SNAPSHOT_KEY)||'[]');
+  if(!history.length)return null;
+  const curKey=getWeekKey();
+  const prev=history.filter(s=>s.key<curKey);
+  return prev.length?prev[prev.length-1]:null;
+}
+
+function deltaHtml(delta){
+  if(delta===0)return`<div class="delta-badge delta-zero">±0</div>`;
+  if(delta>0)return`<div class="delta-badge delta-up">+${delta}</div>`;
+  return`<div class="delta-badge delta-dn">${delta}</div>`;
 }
 
 // ── RENDER TAB 3 ──────────────────────────────────────────────────────────────
-function renderWeekly() {
-  const { divs, total } = DATA;
-  const sum = (t) => DN.reduce((s,d)=>s+(divs[d]?divs[d][t]||0:0),0);
-  const totalVideo = DN.reduce((s,d)=>s+(divs[d]?divs[d]['Видео']||0:0),0);
+function renderWeekly(){
+  const last=getLastSnapshot();
 
-  // Q2 2026 data from weekly report (25.05.26) – static snapshot
-  const Q2 = { Концепт:32, Посадка:20, Визуализация:29, Планировки:20, ЭП:9, total:110, new:8 };
-  const Y26 = { Концепт:sum('Концепт'), Посадка:sum('Посадка'), Визуализация:sum('Визуализация'), Планировки:sum('Планировки'), ЭП:sum('ЭП'), total };
+  // Snapshot info bar
+  document.getElementById('weekly-snap-info').innerHTML=last
+    ?`<span class="snap-badge">📌 Сравнение с: ${last.date} (${last.key})</span>`
+    :`<span class="snap-badge snap-none">Нет снимка прошлой недели — нажмите «Зафиксировать неделю» для начала отслеживания</span>`;
 
-  const idxBase = 40;
-  document.getElementById('weekly-donuts').innerHTML = [
-    { title:'ЗАПРОСЫ Q2', vals:Q2, idx:idxBase },
-    { title:'ЗАПРОСЫ 2026', vals:Y26, idx:idxBase+1 }
-  ].map(({title, vals, idx}) => {
-    const types = TYPE_ORDER.filter(t=>vals[t]>0);
-    const data = types.map(t=>vals[t]);
-    const colors = types.map(t=>TC[t]);
-    const tot = vals.total || data.reduce((a,b)=>a+b,0);
-    const sub = title.includes('Q2') ? `<div style="text-align:center;color:#00a8cc;font-weight:700;font-size:13px;margin-top:-4px">(+${Q2.new} новых)</div>` : '';
-    return `<div class="chart-card no-click">
-      <div class="chart-card-title">${title}</div>
-      <div class="chart-wrap"><canvas id="ch_${idx}" width="155" height="155"></canvas></div>
-      ${sub}
-      <div class="legend">${types.map((t,i)=>`<div class="leg-row"><div class="leg-dot" style="background:${colors[i]}"></div><div class="leg-name">${t}</div><div class="leg-cnt">${data[i]}</div></div>`).join('')}</div>
-    </div>`;
-  }).join('');
+  // ── Load gauge ──
+  const{curLoad,curPct,curBreakdown,nextLoad,nextPct,nextBreakdown}=calcLoad(DATA.workProjects);
+  const inWork=DATA.workProjects.filter(p=>p.status==='в работе').length;
+  const inQueue=DATA.workProjects.filter(p=>p.status==='в очереди').length;
 
-  setTimeout(() => {
-    [
-      { idx:idxBase, vals:Q2 },
-      { idx:idxBase+1, vals:Y26 }
-    ].forEach(({idx, vals}) => {
-      const types=TYPE_ORDER.filter(t=>vals[t]>0);
-      makeDonut(idx, types, types.map(t=>vals[t]), types.map(t=>TC[t]), vals.total||types.reduce((s,t)=>s+vals[t],0));
-    });
-  }, 80);
+  function gaugeColor(pct){return pct<60?'#22c55e':pct<85?'#f0a030':'#ef4444';}
+  function gaugeLabel(pct){return pct<60?'Низкая':pct<85?'Нормальная':pct<120?'Высокая':'Перегрузка';}
 
-  // Bar charts — quarterly data from weekly report
-  const quarters = ['Q1','Q2','Q3','Q4'];
-  const data2025 = [33, 38, 47, 60];
-  const data2026_fact = [115, 88, null, null];
-  const data2026_plan = [null, null, 130, 135];
-
-  function buildBarChart(id, showActual) {
-    if (charts[id]) { charts[id].destroy(); delete charts[id]; }
-    const el = document.getElementById(id);
-    if (!el) return;
-    const datasets = [
-      { label:'2025', data: data2025, backgroundColor:'#3d6ab0', borderRadius:4 },
-    ];
-    if (showActual) {
-      datasets.push({ label:'2026 Q1 факт', data:[115,null,null,null], backgroundColor:'#f0a030', borderRadius:4 });
-      datasets.push({ label:'2026 Q2 факт', data:[null,88,null,null], backgroundColor:'#4caf50', borderRadius:4 });
-    } else {
-      datasets.push({ label:'2026 Q1', data:[115,null,null,null], backgroundColor:'#f0a030', borderRadius:4 });
-      datasets.push({ label:'2026 Q2 цель', data:[null,60,null,null], backgroundColor:'#4caf50', borderRadius:4 });
-    }
-    datasets.push({ label:'2026 план', data:[null,null,showActual?130:125,showActual?135:130], backgroundColor:'#e8d5b5', borderRadius:4 });
-    charts[id] = new Chart(el.getContext('2d'), {
-      type:'bar',
-      data:{ labels:quarters, datasets },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{display:false}, tooltip:{ mode:'index' },
-          datalabels:{ display:false } },
-        scales:{
-          x:{ grid:{display:false}, ticks:{font:{size:11}} },
-          y:{ beginAtZero:true, grid:{color:'#f0f0f0'}, ticks:{font:{size:11}}, max:160 }
-        }
-      }
-    });
+  function breakdownHtml(bd){
+    const rows=Object.entries(bd).sort((a,b)=>b[1].totalW-a[1].totalW)
+      .map(([task,info])=>`<div class="load-row">
+        <div class="load-task">${getTaskLabel(task)}</div>
+        <div class="load-detail">${info.count} задач</div>
+        <div class="load-pd">${info.totalW.toFixed(1)} пд</div>
+      </div>`).join('');
+    return rows||'<div class="load-empty">—</div>';
   }
-  setTimeout(()=>{ buildBarChart('bar-fact', true); buildBarChart('bar-plan', false); }, 80);
+
+  document.getElementById('load-card').innerHTML=`
+    <div class="delta-header">Загруженность отдела</div>
+    <div class="load-two-col">
+      <div class="load-half">
+        <div class="load-half-title">Текущая неделя</div>
+        <div class="load-pct" style="color:${gaugeColor(curPct)}">${curPct}%</div>
+        <div class="load-label" style="color:${gaugeColor(curPct)}">${gaugeLabel(curPct)}</div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(curPct,100)}%;background:${gaugeColor(curPct)}"></div></div>
+        <div class="gauge-sub">${curLoad.toFixed(1)} / ${DEPT_CAPACITY} чел/дней · ${inWork} задач</div>
+        <div class="load-breakdown" style="margin:0 -16px">${breakdownHtml(curBreakdown)}</div>
+      </div>
+      <div class="load-half load-half-next">
+        <div class="load-half-title">Следующая неделя</div>
+        <div class="load-pct" style="color:${gaugeColor(nextPct)};font-size:36px">${nextPct}%</div>
+        <div class="load-label" style="color:${gaugeColor(nextPct)}">${gaugeLabel(nextPct)}</div>
+        <div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(nextPct,100)}%;background:${gaugeColor(nextPct)}"></div></div>
+        <div class="gauge-sub">${nextLoad.toFixed(1)} / ${DEPT_CAPACITY} чел/дней · ${inQueue} задач</div>
+        <div class="load-breakdown" style="margin:0 -16px">${breakdownHtml(nextBreakdown)}</div>
+      </div>
+    </div>`;
+
+  // ── Division deltas ──
+  document.getElementById('div-delta').innerHTML=
+    DN.filter(d=>DATA.divs[d]).map(d=>{
+      const cur=(DATA.divs[d]||{})['Всего']||0;
+      const prev=last?((last.divs[d]||{})['Всего']||0):null;
+      return`<div class="delta-row">
+        <div class="delta-dot" style="background:${dc(d)}"></div>
+        <div class="delta-name">${d}</div>
+        <div class="delta-val">${cur}</div>
+        ${prev!==null?deltaHtml(cur-prev):''}
+      </div>`;
+    }).join('')+`<div class="delta-total-row">
+      <div></div>
+      <div class="delta-name" style="font-weight:800;color:#1a2a4a">Итого</div>
+      <div class="delta-val" style="font-weight:800">${DATA.total}</div>
+      ${last?deltaHtml(DATA.total-(last.total||0)):''}
+    </div>`;
+
+  // ── Type deltas ──
+  document.getElementById('type-delta').innerHTML=
+    TYPE_ORDER.map(t=>{
+      const cur=DATA.types[t]||0;
+      const prev=last?(last.types[t]||0):null;
+      return`<div class="delta-row">
+        <div class="delta-dot" style="background:${TC[t]}"></div>
+        <div class="delta-name">${t}</div>
+        <div class="delta-val">${cur}</div>
+        ${prev!==null?deltaHtml(cur-prev):''}
+      </div>`;
+    }).join('');
 }
 
 // ── RENDER TAB 4 ──────────────────────────────────────────────────────────────
-function renderWork() {
-  const all = DATA.workProjects;
-  const inWork  = all.filter(p=>p.status==='в работе');
-  const inQueue = all.filter(p=>p.status==='в очереди');
-  const inDone  = all.filter(p=>p.status==='готово');
-  document.getElementById('cnt-work').textContent  = '(' + inWork.length + ')';
-  document.getElementById('cnt-queue').textContent = '(' + inQueue.length + ')';
-  document.getElementById('cnt-done').textContent  = '(' + inDone.length + ')';
-  document.getElementById('cnt-all').textContent   = '(' + all.length + ')';
+function renderWork(){
+  const all=DATA.workProjects;
+  const inWork=all.filter(p=>p.status==='в работе');
+  const inQueue=all.filter(p=>p.status==='в очереди');
+  const inDone=all.filter(p=>p.status==='готово');
+  document.getElementById('cnt-work').textContent='('+inWork.length+')';
+  document.getElementById('cnt-queue').textContent='('+inQueue.length+')';
+  document.getElementById('cnt-done').textContent='('+inDone.length+')';
+  document.getElementById('cnt-all').textContent='('+all.length+')';
   drawWorkTable(workFilter);
 }
 
-function drawWorkTable(filter) {
-  workFilter = filter;
+function drawWorkTable(filter){
+  workFilter=filter;
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('on'));
-  const btns = document.querySelectorAll('.fbtn');
-  if(filter==='в работе') btns[0].classList.add('on');
-  else if(filter==='в очереди') btns[1].classList.add('on');
-  else if(filter==='готово') btns[2].classList.add('on');
+  const btns=document.querySelectorAll('.fbtn');
+  if(filter==='в работе')btns[0].classList.add('on');
+  else if(filter==='в очереди')btns[1].classList.add('on');
+  else if(filter==='готово')btns[2].classList.add('on');
   else btns[3].classList.add('on');
 
-  const rows = DATA.workProjects.filter(p => filter==='все' || p.status===filter);
-  const pill = s => `<span class="status-pill ${s==='в работе'?'sp-work':s==='в очереди'?'sp-queue':'sp-done'}">${s}</span>`;
-  const divColor = d => { const c=dc(d); return `<span style="background:${c}20;color:${c};padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700">${d||'—'}</span>`; };
+  const rows=DATA.workProjects.filter(p=>filter==='все'||p.status===filter);
+  const pill=s=>`<span class="status-pill ${s==='в работе'?'sp-work':s==='в очереди'?'sp-queue':'sp-done'}">${s}</span>`;
+  const divBadge=d=>{const c=dc(d);return`<span style="background:${c}20;color:${c};padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700">${d||'—'}</span>`;};
+  const taskBadge=t=>t?`<span style="font-size:11px;color:#555">${t}</span>`:`<span style="color:#ccc">—</span>`;
 
-  document.getElementById('work-tbody').innerHTML = rows.length
-    ? rows.map(p=>`<tr>
+  document.getElementById('work-tbody').innerHTML=rows.length
+    ?rows.map(p=>`<tr>
         <td style="color:#ccc;font-size:11px">${p.num}</td>
         <td style="font-weight:500;color:#1a2a4a">${p.name}</td>
-        <td>${divColor(p.division)}</td>
+        <td>${divBadge(p.division)}</td>
+        <td>${taskBadge(p.task)}</td>
         <td style="font-size:12px;color:#666">${p.persons||'—'}</td>
         <td style="font-size:12px;color:#888">${p.deadline||'—'}</td>
         <td>${pill(p.status)}</td>
       </tr>`).join('')
-    : `<tr><td colspan="6" class="no-data">Нет данных</td></tr>`;
+    :`<tr><td colspan="7" class="no-data">Нет данных</td></tr>`;
 }
 
-function filterWork(f) { drawWorkTable(f); }
+function filterWork(f){drawWorkTable(f);}
 
 // ── MODAL ─────────────────────────────────────────────────────────────────────
-function openDiv(divName) {
-  const vals = DATA.divs[divName];
-  if (!vals) return;
-  document.getElementById('modal-title').textContent = divName;
-
-  const statsHTML = TYPE_ORDER.map(t => `
-    <div class="mstat">
-      <div class="mstat-dot" style="background:${TC[t]}"></div>
-      <div class="mstat-lbl">${t}</div>
-      <div class="mstat-val">${vals[t]||0}</div>
-    </div>`).join('') + `<div class="mstat" style="background:#1a2a4a">
-      <div class="mstat-lbl" style="color:rgba(255,255,255,.6)">Всего</div>
-      <div class="mstat-val" style="color:#fff">${vals['Всего']||0}</div>
-    </div>`;
-  document.getElementById('modal-stats').innerHTML = statsHTML;
-
-  const projects = DATA.projects.filter(p => p.division === divName);
-  document.getElementById('modal-tbody').innerHTML = projects.map(p => `<tr>
+function openDiv(divName){
+  const vals=DATA.divs[divName];
+  if(!vals)return;
+  document.getElementById('modal-title').textContent=divName;
+  document.getElementById('modal-stats').innerHTML=
+    TYPE_ORDER.map(t=>`<div class="mstat"><div class="mstat-dot" style="background:${TC[t]}"></div><div class="mstat-lbl">${t}</div><div class="mstat-val">${vals[t]||0}</div></div>`).join('')+
+    `<div class="mstat" style="background:#1a2a4a"><div class="mstat-lbl" style="color:rgba(255,255,255,.6)">Всего</div><div class="mstat-val" style="color:#fff">${vals['Всего']||0}</div></div>`;
+  // For merged division, include projects from both original divisions
+  const projects=DATA.projects.filter(p=>p.division===divName||(DN_MAP[p.division]===divName));
+  document.getElementById('modal-tbody').innerHTML=projects.map(p=>`<tr>
     <td style="color:#ccc;font-size:11px">${p.num}</td>
     <td style="max-width:260px">${p.name}</td>
     <td><span class="badge ${bc(p.type)}">${p.type||'—'}</span></td>
     <td style="font-size:11px;color:#666">${p.persons||'—'}</td>
-  </tr>`).join('') || `<tr><td colspan="4" class="no-data">Нет данных</td></tr>`;
-
+  </tr>`).join('')||`<tr><td colspan="4" class="no-data">Нет данных</td></tr>`;
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modal-overlay') || e.type === 'click' && e.currentTarget.className.includes('close-btn'))
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modal-overlay'))
     document.getElementById('modal-overlay').classList.remove('open');
 }
 
 // ── TAB SWITCH ─────────────────────────────────────────────────────────────────
-let currentTab = 'div';
-const tabRendered = {};
-function showTab(t) {
-  if (currentTab === t) return;
-  currentTab = t;
-  ['div','type','weekly','work'].forEach(id => {
-    document.getElementById('tab-'+id).classList.toggle('show', id===t);
+let currentTab='div';
+const tabRendered={};
+function showTab(t){
+  if(currentTab===t)return;
+  currentTab=t;
+  ['div','type','weekly','work'].forEach(id=>{
+    document.getElementById('tab-'+id).classList.toggle('show',id===t);
   });
-  document.querySelectorAll('.tab').forEach((b,i) => {
-    b.classList.toggle('on', ['div','type','weekly','work'][i]===t);
+  document.querySelectorAll('.tab').forEach((b,i)=>{
+    b.classList.toggle('on',['div','type','weekly','work'][i]===t);
   });
-  if (!tabRendered[t]) {
-    tabRendered[t] = true;
-    if(t==='div') renderDiv();
-    else if(t==='type') renderType();
-    else if(t==='weekly') renderWeekly();
-    else if(t==='work') renderWork();
+  if(!tabRendered[t]){
+    tabRendered[t]=true;
+    if(t==='div')renderDiv();
+    else if(t==='type')renderType();
+    else if(t==='weekly')renderWeekly();
+    else if(t==='work')renderWork();
   }
 }
 
-// ── LOAD ───────────────────────────────────────────────────────────────────────
-async function load() {
-  try {
-    const [sumCsv, kpiCsv, workCsv] = await Promise.all([
-      fetch(URL_SUM).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }),
-      fetch(URL_KPI).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }),
-      fetch(URL_WORK).then(r=>r.ok ? r.text() : '').catch(()=>'')
+// ── LOAD DATA ─────────────────────────────────────────────────────────────────
+async function load(){
+  try{
+    const[sumCsv,kpiCsv,workCsv]=await Promise.all([
+      fetch(URL_SUM).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text();}),
+      fetch(URL_KPI).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text();}),
+      fetch(URL_WORK).then(r=>r.ok?r.text():'').catch(()=>'')
     ]);
-
-    const sumRows = parseCSV(sumCsv);
-    const divSummary = parseSummary(sumRows);
-    const { total, totalVideo, divs, types } = buildFromSummary(divSummary);
-
-    const kpiRows = parseCSV(kpiCsv);
-    const projects = parseKPI(kpiRows);
-
-    const workRows = parseCSV(workCsv);
-    const workProjects = workRows.length > 1 ? parseWork(workRows) : [];
-
-    DATA = { divs, types, projects, workProjects, total, totalVideo };
-
-    // Update timestamp
-    document.getElementById('updated-ts').textContent = new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-
-    document.getElementById('loading').style.display = 'none';
+    const{total,totalVideo,divs,types}=buildFromSummary(parseSummary(parseCSV(sumCsv)));
+    const projects=parseKPI(parseCSV(kpiCsv));
+    const workRows=parseCSV(workCsv);
+    const workProjects=workRows.length>1?parseWork(workRows):[];
+    DATA={divs,types,projects,workProjects,total,totalVideo};
+    document.getElementById('updated-ts').textContent=
+      new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    document.getElementById('loading').style.display='none';
     document.getElementById('tab-div').classList.add('show');
-    tabRendered.div = true;
+    tabRendered.div=true;
     renderDiv();
-  } catch(e) {
+  }catch(e){
     console.error(e);
-    // Fallback to hardcoded data
-    DATA = {
+    // ── FALLBACK DATA ──
+    DATA={
       divs:{
-        Центр:   {Концепт:10,Посадка:19,Визуализация:20,Планировки:3,ЭП:6,Видео:7,Всего:64},
-        Алматы:  {Концепт:5, Посадка:11,Визуализация:16,Планировки:4,ЭП:5,Видео:2,Всего:43},
-        Юг:      {Концепт:10,Посадка:13,Визуализация:8, Планировки:9,ЭП:0,Видео:4,Всего:43},
-        Запад:   {Концепт:9, Посадка:6, Визуализация:12,Планировки:0,ЭП:5,Видео:1,Всего:35},
-        РДС:     {Концепт:10,Посадка:0, Визуализация:4, Планировки:0,ЭП:0,Видео:8,Всего:15},
-        Ташкент: {Концепт:8, Посадка:3, Визуализация:6, Планировки:1,ЭП:0,Видео:2,Всего:18},
-        Другое:  {Концепт:7, Посадка:1, Визуализация:3, Планировки:1,ЭП:1,Видео:2,Всего:16},
+        'Центр':             {Концепт:12,Посадка:20,Визуализация:22,Планировки:4,ЭП:7,Видео:7,Всего:65},
+        'Алматы':            {Концепт:6, Посадка:11,Визуализация:16,Планировки:5,ЭП:5,Видео:2,Всего:43},
+        'Юг':                {Концепт:11,Посадка:13,Визуализация:10,Планировки:10,ЭП:0,Видео:4,Всего:44},
+        'Запад':             {Концепт:9, Посадка:7, Визуализация:16,Планировки:0,ЭП:5,Видео:1,Всего:37},
+        'РДС':               {Концепт:10,Посадка:0, Визуализация:5, Планировки:0,ЭП:0,Видео:8,Всего:15},
+        'Ташкент / Другое':  {Концепт:15,Посадка:4, Визуализация:9, Планировки:2,ЭП:1,Видео:4,Всего:34},
       },
-      projects: [], workProjects: [
-        {num:1, name:'Реабилитационный центр',division:'Другое',persons:'Диляра, Рамазан',deadline:'',status:'готово'},
-        {num:2, name:'Агро технический колледж',division:'Другое',persons:'Нургуль, Арман',deadline:'28.05',status:'готово'},
-        {num:3, name:'Центр ресоциализации',division:'Центр',persons:'Дана, Исахан',deadline:'27.05',status:'готово'},
-        {num:4, name:'ДШ планировки',division:'Юг',persons:'Анель',deadline:'',status:'готово'},
-        {num:5, name:'Футбольная академия 3 Атырау',division:'Запад',persons:'Мадияр',deadline:'',status:'готово'},
-        {num:6, name:'Платные парковки г. Астана',division:'РДС',persons:'',deadline:'',status:'готово'},
-        {num:7, name:'АЖК корректировки плана',division:'Алматы',persons:'',deadline:'',status:'готово'},
-        {num:8, name:'3D посадка ДШ',division:'Юг',persons:'',deadline:'',status:'готово'},
-        {num:9, name:'ЭП СОШ Астана',division:'Центр',persons:'',deadline:'',status:'готово'},
-        {num:10,name:'Prefab завод продукт',division:'Другое',persons:'Олжас',deadline:'',status:'готово'},
-        {num:11,name:'Медицинские склады г. Астана',division:'Центр',persons:'Олжас',deadline:'',status:'готово'},
-        {num:12,name:'Городской перинатальный центр',division:'Алматы',persons:'Диляра',deadline:'',status:'готово'},
-        {num:13,name:'Скорая помощь в г. Актобе',division:'Запад',persons:'',deadline:'',status:'готово'},
-        {num:14,name:'Аквапарк и ДШ посадка концепт',division:'Юг',persons:'',deadline:'',status:'готово'},
-        {num:15,name:'Комьюнити центр вариант 4',division:'Центр',persons:'',deadline:'',status:'готово'},
-        {num:16,name:'BI БЦ ЭП визы вариант 5',division:'Центр',persons:'',deadline:'',status:'готово'},
-        {num:17,name:'Концепт ФОК и ЦРТ',division:'Запад',persons:'',deadline:'',status:'готово'},
-        {num:18,name:'Посадка Бином 800-1000',division:'Центр',persons:'',deadline:'',status:'готово'},
-        {num:19,name:'Бином Light 2.0 на 1000 и 2500',division:'Другое',persons:'Нургуль, Олжас',deadline:'',status:'в работе'},
-        {num:20,name:'Центр сердца в г. Шымкент',division:'Юг',persons:'Диляра, Салтанат, Диаз',deadline:'8.06',status:'в работе'},
-        {num:21,name:'Smallbox фасады',division:'Центр',persons:'Диаз',deadline:'',status:'в работе'},
-        {num:22,name:'Школа Аль Фараби Визы Алматы',division:'Алматы',persons:'Диаз',deadline:'',status:'в работе'},
-        {num:23,name:'СШИ второй вариант Туркестан',division:'Юг',persons:'Олжас, Нургуль',deadline:'',status:'в работе'},
-        {num:24,name:'Victory School - KSA',division:'Другое',persons:'Олжас',deadline:'',status:'в работе'},
-        {num:25,name:'Олимпийский центр концепт',division:'Юг',persons:'Дана, Исахан, Диана',deadline:'',status:'в работе'},
-        {num:26,name:'СШИ третий вариант',division:'Юг',persons:'Нургуль, Рамазан, Исахан',deadline:'',status:'в работе'},
-        {num:27,name:'BIART благоустройство',division:'Центр',persons:'Мадияр',deadline:'',status:'в работе'},
-        {num:28,name:'Концепт по дому приемов',division:'Юг',persons:'Дана',deadline:'',status:'в работе'},
-        {num:29,name:'Видео стадион уральск и ЦРТ',division:'Запад',persons:'Диаз, Диана',deadline:'',status:'в работе'},
-        {num:33,name:'Теннисный центр корректировки',division:'Запад',persons:'Мадияр',deadline:'',status:'в работе'},
-        {num:30,name:'Детский лагерь концепт',division:'Другое',persons:'',deadline:'',status:'в очереди'},
-        {num:31,name:'Школы в г. Актобе. концепты',division:'Запад',persons:'',deadline:'',status:'в очереди'},
-        {num:32,name:'Поликлиника Бигвиль фасад',division:'Алматы',persons:'',deadline:'',status:'в очереди'},
+      types:{Концепт:63,Посадка:55,Визуализация:78,ЭП:18,Планировки:21},
+      projects:[],
+      workProjects:[
+        {num:1, name:'Реабилитационный центр',       division:'Другое', task:'Разработка концепта',   persons:'Диляра, Рамазан',       deadline:'',    status:'готово'},
+        {num:2, name:'Агро технический колледж',      division:'Другое', task:'Визуализация',          persons:'Нургуль, Арман',        deadline:'28.05',status:'готово'},
+        {num:3, name:'Центр ресоциализации',          division:'Центр',  task:'Разработка концепта',   persons:'Дана, Исахан',          deadline:'27.05',status:'готово'},
+        {num:4, name:'ДШ планировки',                 division:'Юг',     task:'Разработка планировок', persons:'Анель',                 deadline:'',    status:'готово'},
+        {num:5, name:'Футбольная академия Атырау',    division:'Запад',  task:'3D посадка',            persons:'Мадияр',                deadline:'',    status:'готово'},
+        {num:6, name:'Платные парковки Астана',       division:'РДС',    task:'Посадка',               persons:'',                      deadline:'',    status:'готово'},
+        {num:7, name:'АЖК корректировки плана',       division:'Алматы', task:'Разработка планировок', persons:'',                      deadline:'',    status:'готово'},
+        {num:8, name:'3D посадка ДШ',                 division:'Юг',     task:'3D посадка',            persons:'',                      deadline:'',    status:'готово'},
+        {num:9, name:'ЭП СОШ Астана',                 division:'Центр',  task:'',                      persons:'',                      deadline:'',    status:'готово'},
+        {num:10,name:'Prefab завод продукт',           division:'Другое', task:'Разработка концепта',   persons:'Олжас',                 deadline:'',    status:'готово'},
+        {num:11,name:'Медицинские склады Астана',      division:'Центр',  task:'Разработка концепта',   persons:'Олжас',                 deadline:'',    status:'готово'},
+        {num:12,name:'Городской перинатальный центр',  division:'Алматы', task:'Визуализация',          persons:'Диляра',                deadline:'',    status:'готово'},
+        {num:13,name:'Скорая помощь Актобе',           division:'Запад',  task:'Разработка концепта',   persons:'',                      deadline:'',    status:'готово'},
+        {num:14,name:'Аквапарк и ДШ посадка концепт', division:'Юг',     task:'Разработка концепта',   persons:'',                      deadline:'',    status:'готово'},
+        {num:15,name:'Комьюнити центр вариант 4',      division:'Центр',  task:'Разработка концепта',   persons:'',                      deadline:'',    status:'готово'},
+        {num:16,name:'BI БЦ ЭП визы вариант 5',       division:'Центр',  task:'Разработка фасада',     persons:'',                      deadline:'',    status:'готово'},
+        {num:17,name:'Концепт ФОК и ЦРТ',             division:'Запад',  task:'Разработка концепта',   persons:'',                      deadline:'',    status:'готово'},
+        {num:18,name:'Посадка Бином 800-1000',         division:'Центр',  task:'Посадка',               persons:'',                      deadline:'',    status:'готово'},
+        {num:19,name:'Бином Light 2.0 на 1000 и 2500', division:'Другое', task:'Разработка концепта',   persons:'Нургуль, Олжас',        deadline:'',    status:'в работе'},
+        {num:20,name:'Центр сердца Шымкент',           division:'Юг',     task:'Визуализация',          persons:'Диляра, Салтанат, Диаз',deadline:'8.06', status:'в работе'},
+        {num:21,name:'Smallbox фасады',                division:'Центр',  task:'Разработка фасада',     persons:'Диаз',                  deadline:'',    status:'в работе'},
+        {num:22,name:'Школа Аль Фараби Визы Алматы',  division:'Алматы', task:'Визуализация',          persons:'Диаз',                  deadline:'',    status:'в работе'},
+        {num:23,name:'СШИ второй вариант Туркестан',   division:'Юг',     task:'Разработка концепта',   persons:'Олжас, Нургуль',        deadline:'',    status:'в работе'},
+        {num:24,name:'Victory School KSA',             division:'Другое', task:'Разработка концепта',   persons:'Олжас',                 deadline:'',    status:'в работе'},
+        {num:25,name:'Олимпийский центр концепт',      division:'Юг',     task:'Разработка концепта',   persons:'Дана, Исахан, Диана',   deadline:'',    status:'в работе'},
+        {num:26,name:'СШИ третий вариант',             division:'Юг',     task:'Разработка концепта',   persons:'Нургуль, Рамазан, Исахан',deadline:'', status:'в работе'},
+        {num:27,name:'BIART благоустройство',          division:'Центр',  task:'3D посадка',            persons:'Мадияр',                deadline:'',    status:'в работе'},
+        {num:28,name:'Концепт по дому приемов',        division:'Юг',     task:'Разработка концепта',   persons:'Дана',                  deadline:'',    status:'в работе'},
+        {num:29,name:'Видео стадион Уральск и ЦРТ',   division:'Запад',  task:'Разработка видео',      persons:'Диаз, Диана',           deadline:'',    status:'в работе'},
+        {num:33,name:'Теннисный центр корректировки',  division:'Запад',  task:'Разработка фасада',     persons:'Мадияр',                deadline:'',    status:'в работе'},
+        {num:30,name:'Детский лагерь концепт',         division:'Другое', task:'Разработка концепта',   persons:'',                      deadline:'',    status:'в очереди'},
+        {num:31,name:'Школы в Актобе концепты',        division:'Запад',  task:'Разработка концепта',   persons:'',                      deadline:'',    status:'в очереди'},
+        {num:32,name:'Поликлиника Бигвиль фасад',      division:'Алматы', task:'Разработка фасада',     persons:'',                      deadline:'',    status:'в очереди'},
       ],
-      total: 235, totalVideo: 26
+      total:238, totalVideo:26
     };
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('updated-ts').textContent = 'кэш ·';
+    document.getElementById('loading').style.display='none';
+    document.getElementById('updated-ts').textContent='кэш ·';
     document.getElementById('tab-div').classList.add('show');
-    tabRendered.div = true;
+    tabRendered.div=true;
     renderDiv();
   }
 }
