@@ -32,6 +32,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .page.show{display:block}
 .page-title{font-size:18px;font-weight:800;color:#1a2a4a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:18px}
 .page-title span{color:#00a8cc}
+.page-subtitle{font-size:13px;font-weight:600;color:#7a8aa0;letter-spacing:.3px;margin:-12px 0 18px}
 
 /* ── MAIN LAYOUT ── */
 .report-body{display:grid;grid-template-columns:155px 1fr;gap:20px}
@@ -61,6 +62,9 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 .leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 .leg-name2{flex:1;font-size:11px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .leg-num{font-size:12px;font-weight:700;color:#1a2a4a;text-align:right;white-space:nowrap;flex-shrink:0}
+.leg-extra{margin-top:7px;padding-top:7px;border-top:1px dashed #d6deea}
+.leg-extra .leg-name2{font-style:italic;color:#7a8aa0}
+.leg-extra .leg-num{color:#4fb3d9}
 .chart-wrap{position:relative;width:120px;height:120px;flex-shrink:0}
 
 /* ── MODAL ── */
@@ -207,6 +211,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 <!-- ──────────── TAB 1: По дивизионам ──────────── -->
 <div id="tab-div" class="page">
   <div class="page-title">Отдел инициации проектов <span>2026</span></div>
+  <div class="page-subtitle">Проекты по дивизионам</div>
   <div class="report-body">
     <div class="stats-panel">
       <div><div class="stat-lbl">Общее кол-во<br>запросов</div><div class="stat-val" id="s-total">—</div><div class="stat-delta" id="s-total-delta"></div></div>
@@ -220,6 +225,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:#f0f3f8;color:#1a2a4a;mi
 <!-- ──────────── TAB 2: По типам ──────────── -->
 <div id="tab-type" class="page">
   <div class="page-title">Отдел инициации проектов <span>2026</span></div>
+  <div class="page-subtitle">Проекты по типам</div>
   <div class="report-body">
     <div class="stats-panel">
       <div><div class="stat-lbl">Общее кол-во<br>запросов</div><div class="stat-val" id="t-total">—</div><div class="stat-delta" id="t-total-delta"></div></div>
@@ -486,18 +492,23 @@ function makeDonut(idx, labels, data, colors, total, delta){
 }
 
 // ── CARD HTML — legend list left / donut right ───────────────────────────────
-function cardHTML(idx, title, labels, data, colors, total, clickable){
+function cardHTML(idx, title, labels, data, colors, total, clickable, extra){
   const legs=labels.map((l,i)=>`<div class="leg-row2">
     <div class="leg-dot" style="background:${colors[i]}"></div>
     <span class="leg-name2">${l}</span>
     <span class="leg-num">${data[i]}</span>
   </div>`).join('');
+  const extraRow=extra?`<div class="leg-row2 leg-extra">
+    <div class="leg-dot" style="background:${extra.color}"></div>
+    <span class="leg-name2">${extra.label}</span>
+    <span class="leg-num">+${extra.value}</span>
+  </div>`:'';
   const cls=clickable?'chart-card':'chart-card no-click';
   const oc=clickable?`onclick="openDiv('${title}')"`:'';
   return`<div class="${cls}" ${oc}>
     <div class="chart-card-title">${title}</div>
     <div class="card-inner">
-      <div class="card-leg-col">${legs}</div>
+      <div class="card-leg-col">${legs}${extraRow}</div>
       <div class="chart-wrap"><canvas id="ch_${idx}" width="120" height="120"></canvas></div>
     </div>
   </div>`;
@@ -523,17 +534,18 @@ function renderDiv(){
   container.innerHTML=DN.filter(d=>divs[d]).map((div,i)=>{
     const vals=divs[div];
     const labels=[],data=[],colors=[]; let sum=0;
-    TYPE_ORDER.forEach(t=>{if(vals[t]>0){labels.push(t);data.push(vals[t]);colors.push(TC[t]);sum+=vals[t];}});
+    TYPE_ORDER.forEach(t=>{if(t!=='Видео'&&vals[t]>0){labels.push(t);data.push(vals[t]);colors.push(TC[t]);sum+=vals[t];}});
     const noType=(vals['Всего']||0)-sum;
     if(noType>0){labels.push('Без типа');data.push(noType);colors.push(TC['Без типа']);}
-    return cardHTML(i,div,labels,data,colors,vals['Всего']||0,true);
+    const extra=vals['Видео']>0?{label:'Видео',value:vals['Видео'],color:TC['Видео']}:null;
+    return cardHTML(i,div,labels,data,colors,vals['Всего']||0,true,extra);
   }).join('');
 
   setTimeout(()=>{
     DN.filter(d=>divs[d]).forEach((div,i)=>{
       const vals=divs[div];
       const labels=[],data=[],colors=[]; let sum=0;
-      TYPE_ORDER.forEach(t=>{if(vals[t]>0){labels.push(t);data.push(vals[t]);colors.push(TC[t]);sum+=vals[t];}});
+      TYPE_ORDER.forEach(t=>{if(t!=='Видео'&&vals[t]>0){labels.push(t);data.push(vals[t]);colors.push(TC[t]);sum+=vals[t];}});
       const noType=(vals['Всего']||0)-sum;
       if(noType>0){labels.push('Без типа');data.push(noType);colors.push(TC['Без типа']);}
       const divDelta=prevDivs?((vals['Всего']||0)-((prevDivs[div]||{})['Всего']||0)):null;
