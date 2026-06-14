@@ -806,7 +806,7 @@ function renderWeekly(){
     <div class="delta-header">Загруженность отдела</div>
     <div class="load-two-col">
       <div class="load-half">
-        <div class="load-half-title">Текущая неделя</div>
+        <div class="load-half-title">Текущая нагрузка</div>
         <div class="load-pct" style="color:${gaugeColor(curPct)}">${curPct}%</div>
         <div class="load-label" style="color:${gaugeColor(curPct)}">${gaugeLabel(curPct)}</div>
         <div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(curPct,100)}%;background:${gaugeColor(curPct)}"></div></div>
@@ -814,7 +814,7 @@ function renderWeekly(){
         <div class="load-breakdown" style="margin:0 -16px">${breakdownHtml(curBreakdown)}</div>
       </div>
       <div class="load-half load-half-next">
-        <div class="load-half-title">Следующая неделя</div>
+        <div class="load-half-title">Работа в очереди</div>
         <div class="load-pct" style="color:${gaugeColor(nextPct)};font-size:36px">${nextPct}%</div>
         <div class="load-label" style="color:${gaugeColor(nextPct)}">${gaugeLabel(nextPct)}</div>
         <div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(nextPct,100)}%;background:${gaugeColor(nextPct)}"></div></div>
