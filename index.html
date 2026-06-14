@@ -631,9 +631,55 @@ function calcLoad(workProjects){
   };
 }
 
-// ── PHOTO STORAGE (server-side via Apps Script + local cache for immediate UX) ──
-const _localPhotoCache={}; // key `${num}_${slot}`: url | 'loading' | ''
+// ── PHOTO STORAGE (локально в браузере через IndexedDB) ──────────────────────
+const _localPhotoCache={}; // key `${num}_${slot}`: dataURL | ''
 const _projectMap={};      // num → project, built in renderDone
+
+// ── IndexedDB helpers ──
+let _dbPromise=null;
+function _openDB(){
+  if(_dbPromise)return _dbPromise;
+  _dbPromise=new Promise((resolve,reject)=>{
+    const req=indexedDB.open('weeklyReportPhotos',1);
+    req.onupgradeneeded=()=>{req.result.createObjectStore('photos');};
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return _dbPromise;
+}
+async function _idbSet(key,val){const db=await _openDB();return new Promise((res,rej)=>{const tx=db.transaction('photos','readwrite');tx.objectStore('photos').put(val,key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+async function _idbDel(key){const db=await _openDB();return new Promise((res,rej)=>{const tx=db.transaction('photos','readwrite');tx.objectStore('photos').delete(key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+async function _idbAll(){const db=await _openDB();return new Promise((res,rej)=>{const tx=db.transaction('photos','readonly');const store=tx.objectStore('photos');const out={};const cur=store.openCursor();cur.onsuccess=e=>{const c=e.target.result;if(c){out[c.key]=c.value;c.continue();}else res(out);};cur.onerror=()=>rej(cur.error);});}
+
+// Загрузить все сохранённые в браузере фото в кэш и перерисовать
+async function loadStoredPhotos(){
+  if(!('indexedDB' in window))return;
+  try{const all=await _idbAll();Object.assign(_localPhotoCache,all);renderDone();}
+  catch(e){console.warn('Не удалось загрузить сохранённые фото',e);}
+}
+
+// Удалить из браузера фото проектов, которых больше нет в таблице
+async function cleanupOrphanPhotos(){
+  if(!('indexedDB' in window))return;
+  try{
+    const projs=DATA.workProjects||[];
+    if(projs.length===0)return; // данных нет — ничего не трогаем
+    // фото оставляем только для проектов БЕЗ заполненной колонки «Неделя»;
+    // как только «Неделя» заполнена — проект уходит из «Выполненных работ», его фото удаляются
+    const validNums=new Set(projs.filter(p=>!p.week).map(p=>String(p.num)));
+    const all=await _idbAll();
+    let removed=false;
+    for(const key of Object.keys(all)){
+      const num=key.split('_')[0];
+      if(!validNums.has(num)){
+        await _idbDel(key);
+        delete _localPhotoCache[key];
+        removed=true;
+      }
+    }
+    if(removed)renderDone();
+  }catch(e){console.warn('Очистка неиспользуемых фото не удалась',e);}
+}
 
 function getPhotoUrl(project,slot){
   const key=`${project.num}_${slot}`;
@@ -642,22 +688,22 @@ function getPhotoUrl(project,slot){
 }
 
 async function uploadPhotoToServer(num,slot,b64){
-  _localPhotoCache[`${num}_${slot}`]='loading';
-  renderDone();
+  const key=`${num}_${slot}`;
   try{
-    const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'upload',projectNum:num,slot,imageData:b64})});
-    const data=await r.json();
-    if(data.url){_localPhotoCache[`${num}_${slot}`]=data.url;}
-    else{delete _localPhotoCache[`${num}_${slot}`];alert('Ошибка загрузки: '+(data.error||'неизвестная ошибка'));}
-  }catch(e){delete _localPhotoCache[`${num}_${slot}`];alert('Ошибка соединения с сервером');}
+    await _idbSet(key,b64);
+    _localPhotoCache[key]=b64;
+  }catch(e){
+    console.error(e);
+    alert('Не удалось сохранить картинку в браузере (возможно, закончилось место в хранилище).');
+  }
   renderDone();
 }
 
 function removePhoto(num,slot){
-  _localPhotoCache[`${num}_${slot}`]='';
+  const key=`${num}_${slot}`;
+  _localPhotoCache[key]='';
   renderDone();
-  fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'delete',projectNum:num,slot})})
-    .catch(e=>console.warn('delete failed',e));
+  _idbDel(key).catch(e=>console.warn('delete failed',e));
 }
 
 // ── FILE INPUT SINGLETON ──────────────────────────────────────────────────────
@@ -968,6 +1014,7 @@ async function load(){
     document.getElementById('tab-div').classList.add('show');
     tabRendered.div=true;
     renderDiv();
+    cleanupOrphanPhotos();
   }catch(e){
     console.error(e);
     // ── FALLBACK DATA ──
@@ -1029,6 +1076,7 @@ async function load(){
 }
 
 load();
+loadStoredPhotos();
 </script>
 </body>
 </html>
